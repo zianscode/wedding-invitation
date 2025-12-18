@@ -2,13 +2,22 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { FiUser, FiCalendar, FiImage, FiMail } from "react-icons/fi";
+import {
+  FiUser,
+  FiCalendar,
+  FiImage,
+  FiMail,
+  FiMusic,
+  FiPause,
+} from "react-icons/fi";
 import { IoMdHeart } from "react-icons/io";
+import { useAudio } from "../context/AudioContext";
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
+
+  const { isPlaying, isLoading, togglePlay } = useAudio();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -44,136 +53,181 @@ export default function Header() {
         element.scrollIntoView({ behavior: "smooth" });
       }
     }
-    setIsMenuOpen(false);
   };
 
   return (
-    <header
-      className={`fixed top-6 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-300 rounded-full ${
-        isScrolled
-          ? "bg-white/95 backdrop-blur-md shadow-xl border border-gray-100/50"
-          : "bg-white/85 backdrop-blur-sm shadow-lg border border-gray-200/30"
-      }`}
-    >
-      <div className="hidden md:block">
-        <div className="flex items-center justify-between px-8 py-4">
-          <div
-            className="flex items-center space-x-3 cursor-pointer hover:opacity-80 transition-opacity duration-300"
-            onClick={() => router.push("/landing")}
-          >
-            <div className="relative">
-              <IoMdHeart className="text-primary-dusty-pink text-2xl animate-pulse" />
-              <div className="absolute inset-0 bg-primary-dusty-pink/20 rounded-full animate-ping opacity-75"></div>
+    <>
+      {/* Header Utama */}
+      <header
+        className={`fixed top-7 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-300 rounded-full ${
+          isScrolled
+            ? "bg-white/95 backdrop-blur-md shadow-xl border border-gray-100/50"
+            : "bg-white/85 backdrop-blur-sm shadow-lg border border-gray-200/30"
+        }`}
+      >
+        {/* Desktop Header dengan Music Player */}
+        <div className="hidden md:block">
+          <div className="flex items-center justify-between px-4 py-3 min-w-15">
+            {/* Logo Section */}
+            <div
+              className="flex items-center space-x-3 cursor-pointer hover:opacity-80 transition-opacity duration-300"
+              onClick={() => router.push("/landing")}
+            >
+              <div className="relative">
+                <IoMdHeart className="text-primary-dusty-pink text-2xl animate-pulse" />
+                <div className="absolute inset-0 bg-primary-dusty-pink/20 rounded-full animate-ping opacity-75"></div>
+              </div>
+              <div className="flex flex-col">
+                <span className="font-serif text-xl font-bold text-gray-800 leading-tight">
+                  A&S
+                </span>
+                <span className="text-xs text-gray-500 font-light">
+                  Wedding
+                </span>
+              </div>
             </div>
-            <div className="flex flex-col">
-              <span className="font-serif text-xl font-bold text-gray-800 leading-tight">
-                A&S
-              </span>
-              <span className="text-xs text-gray-500 font-light">Wedding</span>
-            </div>
-          </div>
 
-          <nav className="flex items-center space-x-2 ml-8">
-            {menuItems.map((item) => (
-              <button
-                key={item.label}
-                onClick={() => handleNavigation(item.href)}
-                className="group relative bg-white/90 backdrop-blur-sm p-3.5 rounded-full shadow-md hover:shadow-xl transition-all duration-300 hover:scale-110"
-                aria-label={item.label}
-              >
-                <div className="relative z-10 text-gray-600 group-hover:text-primary-dusty-pink transition-colors duration-300">
-                  {item.icon}
-                </div>
-
-                <div className="absolute inset-0 bg-linear-to-br from-white to-gray-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-                <div className="absolute inset-0 border-2 border-transparent rounded-full group-hover:border-primary-dusty-pink/30 group-hover:animate-pulse transition-all duration-300"></div>
-
-                <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 px-3 py-1.5 bg-gray-800/90 backdrop-blur-sm text-white text-xs font-medium rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap pointer-events-none shadow-lg">
-                  {item.label}
-                  <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-gray-800/90 rotate-45"></div>
-                </div>
-              </button>
-            ))}
-          </nav>
-        </div>
-      </div>
-
-      <div className="md:hidden rounded-full">
-        <div
-          className={`flex items-center justify-between px-6 py-3.5 transition-all duration-300 rounded-full ${
-            isMenuOpen
-              ? "bg-white/98 backdrop-blur-md shadow-xl"
-              : "bg-white/85 backdrop-blur-sm shadow-lg"
-          }`}
-        >
-          <div
-            className="flex items-center space-x-3 cursor-pointer hover:opacity-80 transition-opacity duration-300"
-            onClick={() => router.push("/landing")}
-          >
-            <IoMdHeart className="text-primary-dusty-pink text-2xl" />
-            <span className="font-serif text-lg font-bold text-gray-800">
-              A&S
-            </span>
-          </div>
-
-          <button
-            className="group relative bg-white/90 backdrop-blur-sm p-3 rounded-full shadow-md hover:shadow-xl transition-all duration-300 hover:scale-110"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label={isMenuOpen ? "Tutup menu" : "Buka menu"}
-          >
-            <div className="relative w-5 h-5">
-              <div
-                className={`absolute top-1 left-0 w-full h-0.5 bg-gray-700 transition-all duration-300 ${
-                  isMenuOpen ? "rotate-45 top-2" : ""
-                }`}
-              ></div>
-              <div
-                className={`absolute top-2 left-0 w-full h-0.5 bg-gray-700 transition-all duration-300 ${
-                  isMenuOpen ? "opacity-0" : ""
-                }`}
-              ></div>
-              <div
-                className={`absolute top-3 left-0 w-full h-0.5 bg-gray-700 transition-all duration-300 ${
-                  isMenuOpen ? "-rotate-45 top-2" : ""
-                }`}
-              ></div>
-            </div>
-          </button>
-        </div>
-
-        {isMenuOpen && (
-          <div className="absolute top-full left-0 right-0 mt-3 bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-100/50 py-6 px-5">
-            <div className="grid grid-cols-5 gap-3">
+            {/* Navigation Menu Items dengan spacing yang lebih renggang */}
+            <nav className="flex items-center space-x-4 mx-12">
               {menuItems.map((item) => (
                 <button
                   key={item.label}
                   onClick={() => handleNavigation(item.href)}
-                  className="group flex flex-col items-center justify-center transition-all duration-300 hover:scale-105"
+                  className="group relative bg-white/90 backdrop-blur-sm p-4 rounded-full shadow-md hover:shadow-xl transition-all duration-300 hover:scale-110 cursor-pointer"
+                  aria-label={item.label}
                 >
-                  <div className="relative bg-white/95 backdrop-blur-sm p-3.5 rounded-full shadow-md hover:shadow-xl mb-2 transition-all duration-300 group-hover:bg-white">
-                    <div className="text-gray-600 group-hover:text-primary-dusty-pink transition-colors duration-300">
-                      {item.icon}
-                    </div>
-
-                    <div className="absolute inset-0 border-2 border-transparent rounded-full group-hover:border-primary-dusty-pink/30 transition-all duration-300"></div>
+                  <div className="relative z-10 text-gray-600 group-hover:text-primary-dusty-pink transition-colors duration-300">
+                    {item.icon}
                   </div>
 
-                  <span className="text-xs text-gray-700 group-hover:text-primary-dusty-pink font-medium transition-colors duration-300">
+                  <div className="absolute inset-0 bg-linear-to-br from-white to-gray-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+                  <div className="absolute inset-0 border-2 border-transparent rounded-full group-hover:border-primary-dusty-pink/30 group-hover:animate-pulse transition-all duration-300"></div>
+
+                  <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 px-3 py-1.5 bg-gray-800/90 backdrop-blur-sm text-white text-xs font-medium rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap pointer-events-none shadow-lg">
                     {item.label}
-                  </span>
+                    <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-gray-800/90 rotate-45"></div>
+                  </div>
                 </button>
               ))}
-            </div>
+            </nav>
 
-            <div className="mt-6 pt-4 border-t border-gray-200/50">
-              <p className="text-center text-xs text-gray-500 font-light">
-                Dengan penuh rasa syukur dan sukacita di dalam Tuhan
-              </p>
+            {/* Music Player Section dengan spacing yang lebih baik */}
+            <div className="flex items-center">
+              <div className="relative">
+                <button
+                  onClick={togglePlay}
+                  disabled={isLoading}
+                  className={`group relative bg-white/90 backdrop-blur-sm p-4 rounded-full shadow-md hover:shadow-xl transition-all duration-300 hover:scale-110 cursor-pointer ${
+                    isLoading ? "cursor-not-allowed opacity-70" : ""
+                  }`}
+                  aria-label={isPlaying ? "Jeda musik" : "Putar musik"}
+                >
+                  {/* Icon dengan warna tetap primary-dusty-pink dan hover effect yang benar */}
+                  <div className="relative z-10">
+                    {isLoading ? (
+                      <div className="w-5 h-5 border-2 border-primary-dusty-pink border-t-transparent rounded-full animate-spin" />
+                    ) : isPlaying ? (
+                      <FiPause className="text-lg text-primary-dusty-pink group-hover:text-primary-dusty-pink transition-colors duration-300" />
+                    ) : (
+                      <FiMusic className="text-lg text-primary-dusty-pink group-hover:text-primary-dusty-pink transition-colors duration-300" />
+                    )}
+                  </div>
+
+                  {/* Hover Effect - hanya background, tidak mempengaruhi icon */}
+                  <div className="absolute inset-0 bg-linear-to-br from-white to-gray-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+                  {/* Playing Indicator Ring - hanya untuk visual, tidak mempengaruhi icon */}
+                  {isPlaying && (
+                    <div className="absolute inset-0 border-2 border-primary-dusty-pink/50 rounded-full animate-pulse"></div>
+                  )}
+                </button>
+
+                {/* Playing Indicator Dot */}
+                {isPlaying && (
+                  <div className="absolute -top-1 -right-1 w-3 h-3">
+                    <div className="absolute inset-0 bg-primary-dusty-pink rounded-full animate-ping opacity-75" />
+                    <div className="absolute inset-0 bg-primary-dusty-pink rounded-full" />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-        )}
-      </div>
-    </header>
+        </div>
+
+        {/* Mobile Header - Hanya Logo dan Music Player, TANPA tombol menu */}
+        <div className="md:hidden">
+          <div className="flex items-center justify-between px-6 py-3 min-w-60">
+            {/* Mobile Logo */}
+            <div
+              className="flex items-center space-x-3 cursor-pointer hover:opacity-80 transition-opacity duration-300"
+              onClick={() => router.push("/landing")}
+            >
+              <IoMdHeart className="text-primary-dusty-pink text-2xl" />
+              <div className="flex flex-col">
+                <span className="font-serif text-lg font-bold text-gray-800">
+                  A&S
+                </span>
+                <span className="text-xs text-gray-500 font-light">
+                  Wedding
+                </span>
+              </div>
+            </div>
+
+            {/* Hanya Music Player, TANPA tombol menu */}
+            <button
+              onClick={togglePlay}
+              disabled={isLoading}
+              className={`group relative bg-white/90 backdrop-blur-sm p-3 rounded-full shadow-md hover:shadow-xl transition-all duration-300 hover:scale-110 cursor-pointer ${
+                isLoading ? "cursor-not-allowed opacity-70" : ""
+              }`}
+              aria-label={isPlaying ? "Jeda musik" : "Putar musik"}
+            >
+              <div className="relative z-10">
+                {isLoading ? (
+                  <div className="w-4 h-4 border-2 border-primary-dusty-pink border-t-transparent rounded-full animate-spin" />
+                ) : isPlaying ? (
+                  <FiPause className="text-primary-dusty-pink group-hover:text-primary-dusty-pink transition-colors duration-300" />
+                ) : (
+                  <FiMusic className="text-primary-dusty-pink group-hover:text-primary-dusty-pink transition-colors duration-300" />
+                )}
+              </div>
+
+              {/* Playing Indicator for Mobile */}
+              {isPlaying && (
+                <div className="absolute -top-1 -right-1 w-2 h-2 bg-primary-dusty-pink rounded-full animate-pulse"></div>
+              )}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Mobile Navigation Bar - Tetap ada di bawah */}
+      <nav className="fixed md:hidden bottom-4 left-1/2 transform -translate-x-1/2 z-40 bg-white/95 backdrop-blur-lg rounded-3xl border border-gray-200/50 shadow-lg min-w-90">
+        <div className="px-6 py-4">
+          <div className="grid grid-cols-4 gap-8">
+            {menuItems.map((item) => (
+              <button
+                key={item.label}
+                onClick={() => handleNavigation(item.href)}
+                className="group flex flex-col items-center justify-center transition-all duration-300 hover:scale-105 cursor-pointer"
+              >
+                <div className="relative bg-white/95 backdrop-blur-sm p-4 rounded-full shadow-md hover:shadow-xl mb-2 transition-all duration-300 group-hover:bg-white">
+                  <div className="text-gray-600 group-hover:text-primary-dusty-pink transition-colors duration-300">
+                    {item.icon}
+                  </div>
+
+                  <div className="absolute inset-0 border-2 border-transparent rounded-full group-hover:border-primary-dusty-pink/30 transition-all duration-300"></div>
+                </div>
+
+                <span className="text-xs text-gray-700 group-hover:text-primary-dusty-pink font-medium transition-colors duration-300 whitespace-nowrap">
+                  {item.label}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </nav>
+    </>
   );
 }
