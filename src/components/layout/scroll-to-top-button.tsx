@@ -3,7 +3,6 @@
 import { ArrowIcon } from "@/components/ui/icons";
 import { useScrolledPast } from "@/hooks/use-scrolled-past";
 
-/** Tombol kembali ke atas — hanya di desktop, karena mobile sudah punya navigasi bawah */
 export function ScrollToTopButton() {
   const isVisible = useScrolledPast(600);
 

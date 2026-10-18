@@ -2,17 +2,12 @@ import type { ReactNode } from "react";
 
 interface ArchFrameProps {
   children: ReactNode;
-  /** Ukuran & posisi bingkai */
   className?: string;
-  /** Kelas tambahan untuk area foto (mis. animasi) */
   innerClassName?: string;
-  /** Kelas tambahan untuk garis bingkai di belakang foto */
   outlineClassName?: string;
-  /** Arah geser garis bingkai */
   outline?: "right" | "left";
 }
 
-/** Bingkai foto berbentuk lengkung (arch) dengan garis bingkai yang bergeser */
 export function ArchFrame({
   children,
   className = "",

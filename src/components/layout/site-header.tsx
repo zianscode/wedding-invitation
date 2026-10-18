@@ -8,7 +8,6 @@ import { useScrolledPast } from "@/hooks/use-scrolled-past";
 import { MobileNav } from "./mobile-nav";
 import { MusicToggle } from "./music-toggle";
 
-// #opening ikut dipantau agar tidak ada menu aktif saat masih di section pertama
 const OBSERVED_SECTIONS = [SECTION_ID.opening, ...NAV_ITEMS.map((item) => item.id)];
 
 export function SiteHeader() {

@@ -1,6 +1,5 @@
 import { wedding } from "@/data/wedding";
 
-/** Inisial pasangan, contoh: A&C */
 export function Monogram({ className = "" }: { className?: string }) {
   const { groom, bride } = wedding.couple;
 

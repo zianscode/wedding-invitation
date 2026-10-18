@@ -3,7 +3,6 @@ import { parseTimeRange, toWibDate } from "./date";
 
 const toCalendarStamp = (date: Date) => date.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
 
-/** Link "tambahkan ke Google Calendar" untuk sebuah acara */
 export function getGoogleCalendarUrl(event: WeddingEvent, isoDate: string, title: string) {
   const { start, end } = parseTimeRange(event.time);
   const params = new URLSearchParams({

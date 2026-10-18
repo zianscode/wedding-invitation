@@ -1,8 +1,5 @@
 import type { Wedding } from "@/types/wedding";
 
-/**
- * Seluruh konten undangan. Ubah data di sini — tampilan akan mengikuti.
- */
 export const wedding = {
   couple: {
     groom: {

@@ -9,7 +9,6 @@ import { SECTION_ID } from "@/config/navigation";
 import { wedding } from "@/data/wedding";
 import type { GalleryPhoto } from "@/types/wedding";
 
-// Pola grid editorial, berulang setiap 4 foto
 const GRID_PATTERN = [
   "col-span-2 aspect-4/5 lg:col-span-7 lg:row-span-2 lg:aspect-auto",
   "aspect-3/4 lg:col-span-5 lg:aspect-5/4",

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 
-/** Id section yang sedang berada di tengah layar */
 export function useActiveSection(ids: readonly string[]) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const idsKey = ids.join(",");

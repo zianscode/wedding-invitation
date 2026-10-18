@@ -6,7 +6,6 @@ interface SectionHeadingProps {
   eyebrow: string;
   title: ReactNode;
   tone?: "light" | "dark";
-  /** "split" = rata tengah di mobile, rata kiri mulai `lg` */
   align?: "center" | "split";
   className?: string;
 }
@@ -16,7 +15,6 @@ const ALIGNMENT = {
   split: "items-center text-center lg:items-start lg:text-left",
 } as const;
 
-/** Judul section bernomor, contoh: "01 — Mempelai / Dua hati, satu janji" */
 export function SectionHeading({
   index,
   eyebrow,

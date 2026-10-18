@@ -11,7 +11,6 @@ export function OpeningSection({ guest }: OpeningSectionProps) {
   const verse = wedding.verses.opening;
 
   return (
-    // Satu layar penuh: tinggi layar dikurangi navigasi bawah (mobile), isi di tengah
     <section
       id={SECTION_ID.opening}
       className="flex min-h-[calc(100svh-3.5rem-env(safe-area-inset-bottom))] flex-col justify-center px-4 pt-20 pb-12 sm:px-8 sm:pt-24 sm:pb-16 md:min-h-svh"

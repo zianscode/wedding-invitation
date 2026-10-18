@@ -25,8 +25,6 @@ export const metadata: Metadata = {
   keywords: ["wedding", "invitation", "pernikahan", "undangan"],
 };
 
-// viewport-fit=cover agar navigasi bawah bisa mengisi area gesture bar di HP,
-// sehingga env(safe-area-inset-bottom) bernilai > 0
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,

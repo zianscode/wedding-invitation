@@ -24,9 +24,6 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     audio.addEventListener("play", syncPlaying);
     audio.addEventListener("pause", syncPlaying);
 
-    // Browser memblokir autoplay sebelum ada interaksi pengguna, jadi musik diputar
-    // pada klik pertama (mis. "Buka Undangan"). Listener di window berjalan setelah
-    // handler React, sehingga tidak bentrok dengan tombol musik.
     const unlock = () => audio.play().catch(() => {});
     audio.play().catch(() => window.addEventListener("click", unlock, { once: true }));
 

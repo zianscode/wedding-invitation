@@ -6,12 +6,10 @@ import { useInView } from "react-intersection-observer";
 interface RevealProps {
   children?: ReactNode;
   className?: string;
-  /** Jeda animasi dalam detik */
   delay?: number;
   as?: ElementType;
 }
 
-/** Memunculkan konten dengan efek fade-up saat masuk ke layar */
 export function Reveal({ children, className = "", delay = 0, as: Tag = "div" }: RevealProps) {
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.15 });
 

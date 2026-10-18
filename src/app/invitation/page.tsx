@@ -14,7 +14,6 @@ export default async function InvitationPage({ searchParams }: { searchParams: G
   const guest = getGuestName((await searchParams).to);
 
   return (
-    // Padding bawah di mobile untuk navigasi bawah (setinggi 3.5rem + gesture bar)
     <main className="paper-grain bg-paper pb-[calc(3.5rem+env(safe-area-inset-bottom))] text-ink md:pb-0">
       <SiteHeader />
       <ScrollToTopButton />

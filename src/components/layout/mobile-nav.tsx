@@ -4,7 +4,6 @@ interface MobileNavProps {
   activeId: string | null;
 }
 
-/** Navigasi bawah khusus mobile, menempel di atas gesture bar */
 export function MobileNav({ activeId }: MobileNavProps) {
   return (
     <nav

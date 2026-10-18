@@ -8,7 +8,6 @@ import { wedding } from "@/data/wedding";
 import { formatDotDate, formatLongDate, formatRomanDate, getDateParts, parseTimeRange } from "@/lib/date";
 import { getGuestName, withGuest, type GuestSearchParams } from "@/lib/guest";
 
-/** Jeda animasi `.reveal` (detik) */
 const revealDelay = (seconds: number) => ({ "--d": `${seconds}s` }) as CSSProperties;
 
 export default async function LandingPage({ searchParams }: { searchParams: GuestSearchParams }) {

@@ -13,7 +13,6 @@ export interface Couple {
 
 export interface WeddingEvent {
   name: string;
-  /** Rentang waktu dalam WIB, contoh: "10.00 - 12.00 WIB" */
   time: string;
   venue: string;
   address: string;

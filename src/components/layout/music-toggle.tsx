@@ -2,7 +2,6 @@
 
 import { useAudio } from "@/providers/audio-provider";
 
-/** Tinggi batang equalizer saat musik dijeda */
 const IDLE_BAR_HEIGHTS = ["40%", "75%", "55%", "30%"];
 
 export function MusicToggle() {

@@ -12,7 +12,6 @@ const MINUTE = 60 * SECOND;
 const HOUR = 60 * MINUTE;
 const DAY = 24 * HOUR;
 
-// Hitung mundur ke jam acara pertama (WIB)
 const TARGET_TIME = toWibDate(wedding.date, parseTimeRange(wedding.events[0].time).start).getTime();
 
 const TIME_UNITS = [
@@ -29,7 +28,6 @@ function getTimeUnits(remaining: number | null) {
   }));
 }
 
-/** Waktu sekarang (ms), diperbarui tiap detik; `null` sebelum mount agar render server & client sama */
 function useNow() {
   const [now, setNow] = useState<number | null>(null);
 

@@ -9,7 +9,6 @@ interface ArrowIconProps {
   className?: string;
 }
 
-/** Panah garis tipis, dipakai di tombol dan navigasi */
 export function ArrowIcon({ direction = "right", className = "h-3 w-7" }: ArrowIconProps) {
   return (
     <svg

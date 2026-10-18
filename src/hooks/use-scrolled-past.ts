@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 
-/** `true` setelah halaman di-scroll melewati `offset` piksel */
 export function useScrolledPast(offset: number) {
   const [isPast, setIsPast] = useState(false);
 
