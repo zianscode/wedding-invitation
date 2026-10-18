@@ -1,6 +1,6 @@
 # Wedding Invitation
 
-Undangan pernikahan digital — Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS v4.
+Undangan pernikahan digital Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS v4.
 
 ## Menjalankan
 
@@ -24,7 +24,7 @@ Nama tamu ikut terbawa ke `/invitation` dan mengisi otomatis form RSVP.
 
 ## Mengubah isi undangan
 
-Semua konten ada di **`src/data/wedding.ts`** — nama mempelai, tanggal, acara, dress code, galeri,
+Semua konten ada di **`src/data/wedding.ts`** nama mempelai, tanggal, acara, dress code, galeri,
 cerita, ayat, dan musik. Tanggal cukup ditulis sekali (`date`); hari, bulan, countdown, dan link
 kalender dihitung otomatis.
 
@@ -65,5 +65,5 @@ public/
 
 ## Catatan
 
-- Form RSVP belum tersimpan ke mana pun — lihat `TODO` di `src/components/sections/rsvp-section.tsx`.
+- Form RSVP belum tersimpan ke mana pun lihat `TODO` di `src/components/sections/rsvp-section.tsx`.
 - Musik diputar pada klik pertama pengunjung karena browser memblokir autoplay.
