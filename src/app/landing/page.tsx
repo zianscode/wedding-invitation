@@ -1,233 +1,130 @@
-"use client";
+import Image from "next/image";
+import Link from "next/link";
+import type { CSSProperties } from "react";
+import { ArchFrame } from "@/components/ui/arch-frame";
+import { ArrowIcon } from "@/components/ui/icons";
+import { Monogram } from "@/components/ui/monogram";
+import { wedding } from "@/data/wedding";
+import { formatDotDate, formatLongDate, formatRomanDate, getDateParts, parseTimeRange } from "@/lib/date";
+import { getGuestName, withGuest, type GuestSearchParams } from "@/lib/guest";
 
-import { useRouter } from "next/navigation";
-import { FiChevronDown, FiMail } from "react-icons/fi";
-import { useState, useEffect } from "react";
+/** Jeda animasi `.reveal` (detik) */
+const revealDelay = (seconds: number) => ({ "--d": `${seconds}s` }) as CSSProperties;
 
-export default function LandingPage() {
-  const router = useRouter();
-  const [isHovered, setIsHovered] = useState(false);
-  const [isPressed, setIsPressed] = useState(false);
-
-  const handleOpenInvitation = () => {
-    router.push("/invitation");
-  };
-
-  useEffect(() => {
-    const createFlowerParticle = () => {
-      const particle = document.createElement("div");
-      particle.innerHTML = "❀";
-      
-      const size = Math.random() * 15 + 12;
-      const startX = Math.random() * 100;
-      const duration = Math.random() * 8 + 12;
-      const delay = Math.random() * 3;
-      const opacity = Math.random() * 0.3 + 0.4;
-      
-      const animations = ['floatDown', 'floatDownSmooth', 'gentleFall'];
-      const animation = animations[Math.floor(Math.random() * animations.length)];
-      
-      particle.style.position = "fixed";
-      particle.style.left = `${startX}vw`;
-      particle.style.top = "-40px";
-      particle.style.fontSize = `${size}px`;
-      particle.style.opacity = `${opacity}`;
-      particle.style.color = "rgba(255, 255, 255, 0.7)";
-      particle.style.pointerEvents = "none";
-      particle.style.zIndex = "5";
-      particle.style.textShadow = "0 1px 3px rgba(0,0,0,0.3)";
-      particle.style.animation = `${animation} ${duration}s ease-in-out ${delay}s infinite`;
-      particle.style.willChange = "transform, opacity";
-      
-      document.body.appendChild(particle);
-      
-      setTimeout(() => {
-        if (particle.parentNode) {
-          particle.style.opacity = "0";
-          setTimeout(() => {
-            if (particle.parentNode) {
-              document.body.removeChild(particle);
-            }
-          }, 1000);
-        }
-      }, (duration + delay) * 1000);
-    };
-
-    const particleInterval = setInterval(() => {
-      for (let i = 0; i < 2; i++) {
-        createFlowerParticle();
-      }
-    }, 800);
-
-    for (let i = 0; i < 5; i++) {
-      setTimeout(() => createFlowerParticle(), i * 300);
-    }
-
-    return () => {
-      clearInterval(particleInterval);
-      const particles = document.querySelectorAll('[style*="animation: floatDown"], [style*="animation: floatDownSmooth"], [style*="animation: gentleFall"]');
-      particles.forEach(p => p.remove());
-    };
-  }, []);
+export default async function LandingPage({ searchParams }: { searchParams: GuestSearchParams }) {
+  const guest = getGuestName((await searchParams).to);
+  const { groom, bride } = wedding.couple;
+  const { day, month, year } = getDateParts(wedding.date);
 
   return (
-    <section className="min-h-screen relative flex items-center justify-center overflow-hidden">
-      <div className="absolute inset-0 z-0">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: "url(/images/landing/couple.png)",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-            filter: "brightness(0.85) contrast(1.1)",
-          }}
-        />
-        
-        <div className="absolute inset-0 bg-linear-to-b from-black/15 via-black/10 to-primary-cream/20" />
-        
-        <div className="absolute top-0 left-0 w-full h-32 bg-linear-to-b from-white/30 to-transparent" />
-        <div className="absolute bottom-0 left-0 w-full h-32 bg-linear-to-t from-primary-cream/50 to-transparent" />
-      </div>
+    <main className="paper-grain flex min-h-svh flex-col overflow-hidden bg-paper text-ink">
+      <header
+        className="reveal mx-4 flex items-center justify-between border-b border-ink/15 py-4 text-[0.68rem] tracking-[0.3em] uppercase sm:mx-8 sm:py-5 sm:text-xs lg:mx-12"
+        style={revealDelay(0.1)}
+      >
+        <Monogram className="text-base tracking-normal normal-case sm:text-lg" />
+        <span className="hidden text-ink/60 sm:inline">Undangan Pernikahan</span>
+        <span className="text-ink/60">{formatDotDate(wedding.date)}</span>
+      </header>
 
-      <div className="absolute inset-0 z-1 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 text-primary-dusty-pink/15 text-2xl animate-pulse">
-          ❀
-        </div>
-        <div className="absolute top-1/3 right-1/3 text-accent-gold/15 text-3xl animate-ping" style={{ animationDelay: "0.5s" }}>
-          ✿
-        </div>
-        <div className="absolute bottom-1/4 left-1/3 text-primary-sage-green/15 text-2xl animate-pulse" style={{ animationDelay: "1s" }}>
-          ❀
-        </div>
-        <div className="absolute top-1/2 right-1/4 text-accent-brown/15 text-3xl animate-pulse" style={{ animationDelay: "1.5s" }}>
-          ✿
-        </div>
-      </div>
-
-      <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
-        <div className="mb-10 bg-white/10 backdrop-blur-sm p-8 rounded-2xl border border-white/20 shadow-2xl">
-          <h3 className="text-lg md:text-xl text-white mb-2 tracking-[0.3em] font-serif animate-fade-down drop-shadow-lg">
-            THE WEDDING OF
-          </h3>
-          
-          <div className="relative inline-block">
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-handwriting text-white animate-fade-up drop-shadow-2xl leading-tight">
-              Alexander <br className="block md:hidden" />
-              <span className="text-primary-dusty-pink mx-2">&</span> <br className="block md:hidden" />
-              Chloe
-            </h1>
-          </div>
-
-          <div className="w-32 h-1 bg-linear-to-r from-transparent via-accent-gold to-transparent mx-auto my-4 animate-scale-x" />
-          
-          <div className="space-y-2">
-            <p
-              className="text-2xl md:text-3xl text-white font-serif animate-fade-up font-light"
-              style={{ animationDelay: "0.2s" }}
-            >
-              12 • 02 • 2026
-            </p>
-            <p
-              className="text-lg md:text-xl text-white/90 font-sans animate-fade-up italic"
-              style={{ animationDelay: "0.4s" }}
-            >
-              Grand Ballroom Hotel Majestic • Jakarta
-            </p>
-          </div>
-        </div>
-
-        <button
-          onClick={handleOpenInvitation}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          onMouseDown={() => setIsPressed(true)}
-          onMouseUp={() => setIsPressed(false)}
-          onTouchStart={() => setIsPressed(true)}
-          onTouchEnd={() => setIsPressed(false)}
-          className="group relative px-8 py-4 mt-8 bg-linear-to-r from-primary-dusty-pink/90 to-primary-sage-green/90 backdrop-blur-sm rounded-full shadow-2xl hover:shadow-3xl transition-all duration-500 overflow-hidden cursor-pointer border-2 border-white/30 hover:border-white/50 z-20"
-        >
-          <div
-            className={`absolute inset-0 bg-linear-to-r from-transparent via-white/30 to-transparent transition-transform duration-1000 ${
-              isHovered ? "translate-x-full" : "-translate-x-full"
-            }`}
-          />
-
-          <div
-            className={`absolute inset-0 bg-black/20 rounded-full transition-opacity duration-150 ${
-              isPressed ? "opacity-100" : "opacity-0"
-            }`}
-          />
-
-          <div className="relative flex items-center justify-center space-x-3">
-            <FiMail
-              className={`text-white text-xl transition-all duration-300 ${
-                isHovered ? "scale-110 -translate-y-0.5 rotate-12" : ""
-              } ${isPressed ? "scale-95" : ""}`}
+      <div
+        className="grid flex-1 items-center gap-8 px-4 py-8 sm:gap-10 sm:px-8 sm:py-10 lg:grid-cols-12 lg:gap-6 lg:px-12 lg:py-6 [@media(max-height:700px)]:gap-6 [@media(max-height:700px)]:py-5"
+      >
+        <figure className="relative justify-self-center lg:order-2 lg:col-span-5">
+          <ArchFrame
+            className="aspect-3/4 h-[min(40svh,24rem)] sm:h-[min(46svh,30rem)] lg:h-[min(74svh,44rem)]"
+            innerClassName="arch-reveal"
+            outlineClassName="reveal sm:translate-x-4 sm:-translate-y-4"
+          >
+            <Image
+              src="/images/cover.png"
+              alt={`${groom.name} dan ${bride.name}`}
+              fill
+              priority
+              sizes="(min-width: 1024px) 40vw, 80vw"
+              className="arch-settle object-cover object-[50%_45%]"
             />
+          </ArchFrame>
+          <figcaption
+            className="reveal absolute bottom-0 -left-9 hidden rotate-180 text-[0.65rem] tracking-[0.4em] text-ink/50 uppercase [writing-mode:vertical-rl] lg:block"
+            style={revealDelay(1.2)}
+          >
+            {wedding.city} — {formatRomanDate(wedding.date)}
+          </figcaption>
+        </figure>
 
-            <span className="text-white text-lg font-medium tracking-wider">
-              Buka Undangan
+        <section className="flex flex-col items-center text-center lg:order-1 lg:col-span-7 lg:items-start lg:pl-4 lg:text-left xl:pl-10">
+          <p
+            className="reveal eyebrow flex items-center gap-3 text-moss sm:text-xs [@media(max-height:700px)]:max-lg:hidden"
+            style={revealDelay(0.3)}
+          >
+            <span className="h-px w-8 bg-moss/50" />
+            The Wedding of
+          </p>
+
+          <h1
+            className="reveal mt-4 font-display text-[3.4rem] leading-[0.9] font-light tracking-[-0.01em] sm:mt-5 sm:text-[5rem] lg:text-[min(6.25rem,13svh)] xl:text-[min(8.25rem,14.5svh)] [@media(max-height:700px)]:text-[3rem] [@media(max-height:700px)]:max-lg:mt-0"
+            style={revealDelay(0.45)}
+          >
+            <span className="block">{groom.name}</span>
+            <span className="block lg:pl-[0.9em]">
+              <span className="text-clay italic">&amp;</span> {bride.name}
             </span>
+          </h1>
 
-            <div
-              className={`transition-all duration-300 overflow-hidden ${
-                isHovered ? "w-6 opacity-100" : "w-0 opacity-0"
-              } ${isPressed ? "translate-x-1" : ""}`}
-            >
-              <svg
-                className="w-5 h-5 text-white"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M14 5l7 7m0 0l-7 7m7-7H3"
-                />
-              </svg>
+          <p
+            className="reveal mt-6 hidden max-w-md text-[0.95rem] leading-relaxed text-ink/70 sm:block lg:mt-[min(2rem,3.5svh)]"
+            style={revealDelay(0.6)}
+          >
+            Dengan memohon rahmat dan berkat Tuhan, kami mengundang Anda untuk hadir dan berbagi sukacita di hari
+            pernikahan kami.
+          </p>
+
+          <p className="reveal mt-3 font-display text-lg text-ink/70 italic sm:hidden" style={revealDelay(0.6)}>
+            {formatLongDate(wedding.date)}
+          </p>
+
+          <dl
+            className="reveal mt-8 hidden w-full max-w-md grid-cols-2 divide-x divide-ink/15 border-y border-ink/15 text-left sm:grid lg:mt-[min(2rem,3.5svh)]"
+            style={revealDelay(0.7)}
+          >
+            {wedding.events.map((event) => (
+              <div key={event.name} className="px-4 py-4 first:pl-0 last:pr-0">
+                <dt className="eyebrow text-moss">{event.name.split(" ")[0]}</dt>
+                <dd className="mt-1.5 font-display text-2xl leading-none">
+                  {parseTimeRange(event.time).start}
+                  <span className="ml-1.5 font-sans text-xs tracking-wider text-ink/50">WIB</span>
+                </dd>
+                <dd className="mt-1.5 text-xs leading-snug text-ink/60">{event.venue}</dd>
+              </div>
+            ))}
+          </dl>
+
+          <div
+            className="reveal mt-7 flex w-full max-w-xs flex-col items-stretch gap-5 sm:mt-8 sm:max-w-md sm:flex-row sm:items-end sm:gap-8 [@media(max-height:700px)]:mt-5"
+            style={revealDelay(0.85)}
+          >
+            <div className="text-center sm:flex-1 sm:text-left">
+              <p className="eyebrow text-ink/50">Kepada Yth.</p>
+              <p className="mt-1 font-display text-xl leading-tight wrap-break-word sm:text-2xl">
+                {guest || "Bapak/Ibu/Saudara/i"}
+              </p>
             </div>
-          </div>
-          
-          {isHovered && (
-            <>
-              <div className="absolute -top-2 -left-2 text-accent-gold/50 text-lg animate-ping">
-                ✿
-              </div>
-              <div className="absolute -top-2 -right-2 text-primary-dusty-pink/50 text-lg animate-ping" style={{ animationDelay: "0.2s" }}>
-                ❀
-              </div>
-              <div className="absolute -bottom-2 -left-2 text-primary-sage-green/50 text-lg animate-ping" style={{ animationDelay: "0.4s" }}>
-                ✿
-              </div>
-              <div className="absolute -bottom-2 -right-2 text-accent-gold/50 text-lg animate-ping" style={{ animationDelay: "0.6s" }}>
-                ❀
-              </div>
-            </>
-          )}
-        </button>
 
-        <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 animate-bounce z-20">
-          <div className="flex flex-col items-center">
-            <FiChevronDown className="text-accent-gold text-2xl" />
+            <Link href={withGuest("/invitation", guest)} className="button-primary group">
+              Buka Undangan
+              <ArrowIcon className="h-3 w-7 transition-transform duration-300 group-hover:translate-x-1.5" />
+            </Link>
           </div>
-        </div>
+        </section>
       </div>
 
-      <div className="absolute top-10 left-10 text-primary-dusty-pink/15 text-4xl animate-float hidden md:block z-5">
-        ❦
-      </div>
-      <div className="absolute top-10 right-10 text-primary-sage-green/15 text-4xl animate-float hidden md:block z-5">
-        ❦
-      </div>
-      <div className="absolute bottom-20 left-20 text-accent-gold/15 text-3xl animate-float z-5" style={{ animationDelay: "1s" }}>
-        ✿
-      </div>
-      <div className="absolute bottom-20 right-20 text-accent-gold/15 text-3xl animate-float z-5" style={{ animationDelay: "2s" }}>
-        ✿
-      </div>
-    </section>
+      <footer
+        className="reveal mx-4 flex justify-center border-t border-ink/15 py-4 text-[0.62rem] tracking-[0.35em] text-ink/45 uppercase sm:mx-8 lg:mx-12 lg:justify-start"
+        style={revealDelay(1.1)}
+      >
+        {wedding.city} · {day} {month} {year}
+      </footer>
+    </main>
   );
 }

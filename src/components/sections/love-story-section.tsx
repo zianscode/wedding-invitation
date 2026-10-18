@@ -1,69 +1,57 @@
-'use client'
+import { Reveal } from "@/components/ui/reveal";
+import { SectionHeading } from "@/components/ui/section-heading";
+import { SECTION_ID } from "@/config/navigation";
+import { wedding } from "@/data/wedding";
 
-import { useInView } from 'react-intersection-observer'
-import { LoveStoryStep } from '@/types'
-import { FiHeart } from 'react-icons/fi'
-
-interface LoveStoryProps {
-  story: LoveStoryStep[]
-}
-
-export default function LoveStory({ story }: LoveStoryProps) {
-  const [ref, inView] = useInView({
-    triggerOnce: true,
-    threshold: 0.1,
-  })
+export function LoveStorySection() {
+  const { story } = wedding;
 
   return (
-    <section 
-      ref={ref}
-      className={`section-container bg-white/30 transition-all duration-700 ${
-        inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-      }`}
-    >
-      <h2 className="section-title">Cerita Cinta Kami</h2>
-      
-      <div className="max-w-4xl mx-auto">
-        <div className="relative">
-          <div className="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-linear-to-b from-primary-dusty-pink/20 via-accent-gold/30 to-primary-sage-green/20 hidden md:block" />
-          
-          {story.map((step, index) => (
-            <div
-              key={step.id}
-              className={`flex items-center mb-12 md:mb-16 ${
-                index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'
-              }`}
-            >
-              <div className="hidden md:flex items-center justify-center w-1/2">
-                <div className={`relative ${index % 2 === 0 ? 'md:mr-8' : 'md:ml-8'}`}>
-                  <div className="w-6 h-6 rounded-full bg-linear-to-r from-primary-dusty-pink to-accent-gold border-4 border-white shadow-lg" />
-                  <div className="absolute inset-0 rounded-full animate-ping bg-primary-dusty-pink/30" />
-                </div>
-              </div>
-              
-              <div className={`w-full md:w-1/2 ${index % 2 === 0 ? 'md:pl-8' : 'md:pr-8'}`}>
-                <div 
-                  className={`bg-white rounded-2xl shadow-lg p-6 card-hover animate-fade-up`}
-                  style={{ animationDelay: `${index * 0.2}s` }}
-                >
-                  <div className="flex items-center mb-4">
-                    <FiHeart className="text-primary-dusty-pink mr-3" />
-                    <span className="text-accent-gold font-medium">{step.date}</span>
-                  </div>
-                  <h3 className="text-xl font-serif text-gray-800 mb-3">{step.title}</h3>
-                  <p className="text-gray-600 leading-relaxed">{step.description}</p>
-                </div>
-              </div>
-            </div>
-          ))}
+    <section id={SECTION_ID.story} className="scroll-mt-16 bg-paper-deep px-4 py-20 sm:px-8 sm:py-28 lg:px-12">
+      <div className="mx-auto grid max-w-6xl gap-14 lg:grid-cols-12 lg:gap-16">
+        <div className="lg:sticky lg:top-28 lg:col-span-4 lg:self-start">
+          <SectionHeading
+            index="05"
+            eyebrow="Cerita Kami"
+            align="split"
+            title={
+              <>
+                Perjalanan <em className="text-clay">kasih</em>
+              </>
+            }
+          />
+          <Reveal delay={0.1}>
+            <p className="mx-auto mt-6 max-w-sm text-center text-[0.95rem] leading-relaxed text-ink/65 lg:mx-0 lg:text-left">
+              Setiap bab membawa kami lebih dekat — dan kini kami siap menulis bab terindah bersama.
+            </p>
+          </Reveal>
         </div>
-      </div>
-      
-      <div className="text-center mt-12">
-        <p className="text-lg text-gray-700 font-serif">
-          &quot;Setiap bab dalam cerita kami membawa kami lebih dekat, dan kini kami siap menulis bab terindah bersama.&quot;
-        </p>
+
+        <ol className="border-t border-ink/15 lg:col-span-8">
+          {story.map((milestone, index) => {
+            const isLatest = index === story.length - 1;
+            return (
+              <Reveal
+                as="li"
+                key={milestone.year}
+                className="grid grid-cols-[5rem_1fr] gap-5 border-b border-ink/15 py-8 sm:grid-cols-[8.5rem_1fr] sm:gap-10 sm:py-10"
+              >
+                <span
+                  className={`font-display text-4xl leading-none font-light lining-nums sm:text-6xl ${
+                    isLatest ? "text-clay" : "text-ink/35"
+                  }`}
+                >
+                  {milestone.year}
+                </span>
+                <div>
+                  <h3 className="font-display text-2xl leading-tight sm:text-3xl">{milestone.title}</h3>
+                  <p className="mt-3 max-w-xl text-[0.95rem] leading-relaxed text-ink/65">{milestone.description}</p>
+                </div>
+              </Reveal>
+            );
+          })}
+        </ol>
       </div>
     </section>
-  )
+  );
 }

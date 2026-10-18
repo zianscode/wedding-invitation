@@ -1,141 +1,56 @@
-'use client'
+"use client";
 
-import React, { createContext, useContext, useState, useEffect, useRef, useCallback, ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { wedding } from "@/data/wedding";
 
-interface AudioContextType {
-  isPlaying: boolean
-  isLoading: boolean
-  togglePlay: () => Promise<void>
+interface AudioContextValue {
+  isPlaying: boolean;
+  toggle: () => void;
 }
 
-const AudioContext = createContext<AudioContextType | undefined>(undefined)
+const AudioContext = createContext<AudioContextValue | null>(null);
 
 export function AudioProvider({ children }: { children: ReactNode }) {
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [hasInitialized, setHasInitialized] = useState(false)
-  
-  const audioRef = useRef<HTMLAudioElement | null>(null)
-  const hasTriedAutoPlay = useRef(false)
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return
+    const audio = new Audio(wedding.music.src);
+    audio.loop = true;
+    audio.preload = "auto";
+    audioRef.current = audio;
 
-    if (!audioRef.current) {
-      const audio = new Audio('/audio/about-you.mp3')
-      audio.loop = true
-      audio.preload = 'auto'
-      audio.volume = 1 
-      
-      audio.addEventListener('play', () => setIsPlaying(true))
-      audio.addEventListener('pause', () => setIsPlaying(false))
-      audio.addEventListener('ended', () => setIsPlaying(false))
-      audio.addEventListener('error', (e) => {
-        console.error('Audio error:', e)
-        setIsPlaying(false)
-        setIsLoading(false)
-      })
-      
-      audioRef.current = audio
-    }
+    const syncPlaying = () => setIsPlaying(!audio.paused);
+    audio.addEventListener("play", syncPlaying);
+    audio.addEventListener("pause", syncPlaying);
 
-    setHasInitialized(true)
+    // Browser memblokir autoplay sebelum ada interaksi pengguna, jadi musik diputar
+    // pada klik pertama (mis. "Buka Undangan"). Listener di window berjalan setelah
+    // handler React, sehingga tidak bentrok dengan tombol musik.
+    const unlock = () => audio.play().catch(() => {});
+    audio.play().catch(() => window.addEventListener("click", unlock, { once: true }));
 
     return () => {
-      if (audioRef.current) {
-        audioRef.current.pause()
-        audioRef.current = null
-      }
-    }
-  }, [])
+      window.removeEventListener("click", unlock);
+      audio.removeEventListener("play", syncPlaying);
+      audio.removeEventListener("pause", syncPlaying);
+      audio.pause();
+      audioRef.current = null;
+    };
+  }, []);
 
-  useEffect(() => {
-    if (!hasInitialized || hasTriedAutoPlay.current || !audioRef.current) return
+  const toggle = useCallback(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (audio.paused) audio.play().catch(() => {});
+    else audio.pause();
+  }, []);
 
-    const tryAutoPlay = () => {
-      if (hasTriedAutoPlay.current) return
-      
-      hasTriedAutoPlay.current = true
-      setIsLoading(true)
-      
-      setTimeout(() => {
-        if (!audioRef.current) return
-        
-        const playPromise = audioRef.current.play()
-        
-        if (playPromise !== undefined) {
-          playPromise
-            .then(() => {
-              setIsPlaying(true)
-              setIsLoading(false)
-            })
-            .catch((error) => {
-              console.log('Auto-play dicegah:', error)
-              setIsPlaying(false)
-              setIsLoading(false)
-              hasTriedAutoPlay.current = false
-            })
-        }
-      }, 500)
-    }
-
-    tryAutoPlay()
-
-    const handleGlobalClick = () => {
-      if (!hasTriedAutoPlay.current && audioRef.current && !isPlaying) {
-        tryAutoPlay()
-      }
-    }
-
-    document.addEventListener('click', handleGlobalClick)
-    
-    return () => {
-      document.removeEventListener('click', handleGlobalClick)
-    }
-  }, [hasInitialized, isPlaying])
-
-  const togglePlay = useCallback(async () => {
-    if (!audioRef.current) return
-    
-    setIsLoading(true)
-    
-    try {
-      if (isPlaying) {
-        audioRef.current.pause()
-        setIsPlaying(false)
-      } else {
-        const playPromise = audioRef.current.play()
-        
-        if (playPromise !== undefined) {
-          await playPromise
-          setIsPlaying(true)
-        }
-      }
-    } catch (error) {
-      console.error('Error saat mengontrol pemutaran audio:', error)
-      setIsPlaying(false)
-    } finally {
-      setIsLoading(false)
-    }
-  }, [isPlaying])
-
-  const value = {
-    isPlaying,
-    isLoading,
-    togglePlay,
-  }
-
-  return (
-    <AudioContext.Provider value={value}>
-      {children}
-    </AudioContext.Provider>
-  )
+  return <AudioContext.Provider value={{ isPlaying, toggle }}>{children}</AudioContext.Provider>;
 }
 
 export function useAudio() {
-  const context = useContext(AudioContext)
-  if (context === undefined) {
-    throw new Error('useAudio must be used within an AudioProvider')
-  }
-  return context
+  const context = useContext(AudioContext);
+  if (!context) throw new Error("useAudio harus dipakai di dalam <AudioProvider>");
+  return context;
 }

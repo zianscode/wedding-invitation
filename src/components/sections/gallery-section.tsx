@@ -1,138 +1,147 @@
 "use client";
 
-import { useState } from "react";
-import { useInView } from "react-intersection-observer";
-import { GalleryPhoto } from "@/types";
-import { FiChevronLeft, FiChevronRight, FiHeart } from "react-icons/fi";
+import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
+import { ArrowIcon } from "@/components/ui/icons";
+import { Reveal } from "@/components/ui/reveal";
+import { SectionHeading } from "@/components/ui/section-heading";
+import { SECTION_ID } from "@/config/navigation";
+import { wedding } from "@/data/wedding";
+import type { GalleryPhoto } from "@/types/wedding";
 
-interface GalleryProps {
+// Pola grid editorial, berulang setiap 4 foto
+const GRID_PATTERN = [
+  "col-span-2 aspect-4/5 lg:col-span-7 lg:row-span-2 lg:aspect-auto",
+  "aspect-3/4 lg:col-span-5 lg:aspect-5/4",
+  "aspect-3/4 lg:col-span-5 lg:aspect-5/4",
+  "col-span-2 aspect-16/10 lg:col-span-12 lg:aspect-21/9",
+];
+
+const padNumber = (value: number) => value.toString().padStart(2, "0");
+
+interface LightboxProps {
   photos: GalleryPhoto[];
+  index: number;
+  onClose: () => void;
+  onStep: (delta: number) => void;
 }
 
-export default function Gallery({ photos }: GalleryProps) {
-  const [ref, inView] = useInView({
-    triggerOnce: true,
-    threshold: 0.1,
-  });
+function Lightbox({ photos, index, onClose, onStep }: LightboxProps) {
+  const photo = photos[index];
 
-  const [currentIndex, setCurrentIndex] = useState(0);
+  useEffect(() => {
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+      if (event.key === "ArrowRight") onStep(1);
+      if (event.key === "ArrowLeft") onStep(-1);
+    };
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleKey);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKey);
+    };
+  }, [onClose, onStep]);
 
-  const nextImage = () => {
-    setCurrentIndex((prev) => (prev + 1) % photos.length);
-  };
-
-  const prevImage = () => {
-    setCurrentIndex((prev) => (prev - 1 + photos.length) % photos.length);
-  };
+  const stopPropagation = (event: React.MouseEvent) => event.stopPropagation();
 
   return (
-    <section
-      id="gallery"
-      ref={ref}
-      className={`section-container transition-all duration-700 ${
-        inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-      }`}
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={photo.caption}
+      onClick={onClose}
+      className="fixed inset-0 z-60 flex flex-col bg-ink/95 text-paper backdrop-blur-sm"
     >
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-12">
-          <FiHeart className="text-primary-dusty-pink text-4xl mx-auto mb-6 animate-pulse" />
-          <h2 className="text-4xl md:text-5xl font-serif text-gray-800 mb-4">
-            Galeri Kenangan
-          </h2>
-          <div className="flex items-center justify-center space-x-4 mb-6">
-            <div className="w-12 h-px bg-linear-to-r from-transparent to-primary-dusty-pink" />
-            <FiHeart className="text-primary-dusty-pink text-sm" />
-            <div className="w-12 h-px bg-linear-to-r from-primary-dusty-pink to-transparent" />
-          </div>
-          <p className="text-lg text-gray-600">
-            Momen berharga dalam perjalanan cinta kami
-          </p>
-        </div>
-
-        <div className="bg-white/70 backdrop-blur-sm p-6 md:p-8 rounded-2xl shadow-xl border border-white/50 mb-8">
-          <div className="relative h-96 md:h-128 rounded-xl overflow-hidden shadow-lg">
-            {photos[currentIndex] && (
-              <div className="relative w-full h-full">
-                <Image
-                  src={photos[currentIndex].src}
-                  alt={photos[currentIndex].alt}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 800px"
-                  priority={currentIndex === 0}
-                />
-                <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent" />
-              </div>
-            )}
-
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white/90 backdrop-blur-sm px-6 py-2 rounded-full shadow-lg">
-              <p className="text-gray-700 text-sm font-medium">
-                {currentIndex + 1} / {photos.length}
-              </p>
-            </div>
-
-            {photos.length > 1 && (
-              <>
-                <button
-                  onClick={prevImage}
-                  className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/90 backdrop-blur-sm p-3 rounded-full shadow-lg hover:bg-white hover:scale-110 transition-all duration-300"
-                  aria-label="Foto sebelumnya"
-                >
-                  <FiChevronLeft className="text-gray-700 text-xl" />
-                </button>
-
-                <button
-                  onClick={nextImage}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/90 backdrop-blur-sm p-3 rounded-full shadow-lg hover:bg-white hover:scale-110 transition-all duration-300"
-                  aria-label="Foto berikutnya"
-                >
-                  <FiChevronRight className="text-gray-700 text-xl" />
-                </button>
-              </>
-            )}
-          </div>
-
-          <div className="text-center mt-6">
-            <p className="text-lg font-serif text-gray-700 italic">
-              {photos[currentIndex]?.description}
-            </p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {photos.map((photo, index) => (
-            <div
-              key={photo.id}
-              className={`relative h-48 rounded-xl overflow-hidden cursor-pointer transition-all duration-300 ${
-                index === currentIndex
-                  ? "ring-4 ring-primary-dusty-pink ring-offset-2 scale-105"
-                  : "hover:scale-105 hover:ring-2 hover:ring-primary-dusty-pink/50 opacity-80 hover:opacity-100"
-              }`}
-              onClick={() => setCurrentIndex(index)}
-            >
-              <div className="relative w-full h-full">
-                <Image
-                  src={photo.src}
-                  alt={photo.alt}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 50vw, 200px"
-                />
-                <div className={`absolute inset-0 transition-all duration-300 ${
-                  index === currentIndex 
-                    ? 'bg-linear-to-t from-primary-dusty-pink/20 to-transparent' 
-                    : 'bg-linear-to-t from-black/30 to-transparent'
-                }`} />
-              </div>
-
-              {index === currentIndex && (
-                <div className="absolute top-2 right-2 w-3 h-3 bg-primary-dusty-pink rounded-full animate-pulse shadow-lg" />
-              )}
-            </div>
-          ))}
-        </div>
+      <div className="eyebrow flex h-16 items-center justify-between px-4 text-paper/60 sm:px-8">
+        <span>
+          {padNumber(index + 1)} / {padNumber(photos.length)}
+        </span>
+        <button type="button" onClick={onClose} autoFocus className="transition-colors hover:text-paper">
+          Tutup ✕
+        </button>
       </div>
+
+      <div onClick={stopPropagation} className="relative mx-4 flex-1 sm:mx-20">
+        <Image key={photo.src} src={photo.src} alt={photo.alt} fill sizes="100vw" className="animate-fade-in object-contain" />
+      </div>
+
+      <div
+        onClick={stopPropagation}
+        className="flex items-center justify-between gap-4 px-4 py-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] sm:px-8"
+      >
+        <button
+          type="button"
+          onClick={() => onStep(-1)}
+          aria-label="Foto sebelumnya"
+          className="p-2 text-paper/60 transition-colors hover:text-paper"
+        >
+          <ArrowIcon direction="left" className="h-3 w-8" />
+        </button>
+        <p className="text-center font-display text-lg italic sm:text-2xl">{photo.caption}</p>
+        <button
+          type="button"
+          onClick={() => onStep(1)}
+          aria-label="Foto berikutnya"
+          className="p-2 text-paper/60 transition-colors hover:text-paper"
+        >
+          <ArrowIcon className="h-3 w-8" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export function GallerySection() {
+  const photos = wedding.gallery;
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  const close = useCallback(() => setOpenIndex(null), []);
+  const step = useCallback(
+    (delta: number) =>
+      setOpenIndex((current) => (current === null ? null : (current + delta + photos.length) % photos.length)),
+    [photos.length]
+  );
+
+  return (
+    <section id={SECTION_ID.gallery} className="scroll-mt-16 px-4 py-20 sm:px-8 sm:py-28 lg:px-12">
+      <SectionHeading
+        index="04"
+        eyebrow="Galeri"
+        title={
+          <>
+            Potret <em className="text-clay">kebersamaan</em>
+          </>
+        }
+      />
+
+      <div className="mx-auto mt-14 grid max-w-6xl grid-cols-2 gap-3 sm:mt-16 sm:gap-4 lg:grid-cols-12">
+        {photos.map((photo, index) => (
+          <Reveal key={photo.src} delay={(index % 4) * 0.08} className={GRID_PATTERN[index % GRID_PATTERN.length]}>
+            <button
+              type="button"
+              onClick={() => setOpenIndex(index)}
+              aria-label={`Perbesar foto: ${photo.caption}`}
+              className="group relative block h-full w-full overflow-hidden bg-moss/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-clay"
+            >
+              <Image
+                src={photo.src}
+                alt={photo.alt}
+                fill
+                sizes="(min-width: 1024px) 60vw, (min-width: 640px) 50vw, 100vw"
+                className="object-cover object-[50%_35%] transition-transform duration-1000 ease-out group-hover:scale-[1.04]"
+              />
+              <span className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 bg-linear-to-t from-ink/60 to-transparent px-4 pt-12 pb-3.5 text-left text-paper sm:px-5 sm:pb-4">
+                <span className="font-display text-base leading-tight italic sm:text-xl">{photo.caption}</span>
+                <span className="text-[0.6rem] tracking-[0.3em] text-paper/70">{padNumber(index + 1)}</span>
+              </span>
+            </button>
+          </Reveal>
+        ))}
+      </div>
+
+      {openIndex !== null && <Lightbox photos={photos} index={openIndex} onClose={close} onStep={step} />}
     </section>
   );
 }

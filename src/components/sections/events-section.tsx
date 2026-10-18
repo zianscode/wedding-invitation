@@ -1,111 +1,108 @@
-'use client'
+import { ExternalLinkIcon } from "@/components/ui/icons";
+import { Reveal } from "@/components/ui/reveal";
+import { SectionHeading } from "@/components/ui/section-heading";
+import { SECTION_ID } from "@/config/navigation";
+import { wedding } from "@/data/wedding";
+import { getGoogleCalendarUrl } from "@/lib/calendar";
+import { getDateParts, parseTimeRange } from "@/lib/date";
+import type { WeddingEvent } from "@/types/wedding";
 
-import { useInView } from 'react-intersection-observer'
-import { Event } from '@/types'
-import { FiCalendar, FiClock, FiMapPin, FiExternalLink, FiHeart } from 'react-icons/fi'
+const CALENDAR_TITLE = `Pernikahan ${wedding.couple.groom.name} & ${wedding.couple.bride.name}`;
 
-interface EventDetailsProps {
-  events: Event[]
-}
-
-export default function EventDetails({ events }: EventDetailsProps) {
-  const [ref, inView] = useInView({
-    triggerOnce: true,
-    threshold: 0.1,
-  })
+function EventItem({ event, delay }: { event: WeddingEvent; delay: number }) {
+  const { start, end } = parseTimeRange(event.time);
 
   return (
-    <section 
-      id="events" 
-      ref={ref}
-      className={`section-container transition-all duration-700 ${
-        inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-      }`}
+    <Reveal
+      as="li"
+      delay={delay}
+      className="grid gap-x-10 gap-y-4 border-b border-ink/15 py-9 sm:grid-cols-[7.5rem_1fr] sm:py-11"
     >
-      <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-12">
-          <FiHeart className="text-primary-dusty-pink text-4xl mx-auto mb-6 animate-pulse" />
-          <h2 className="text-4xl md:text-5xl font-serif text-gray-800 mb-4">
-            Detail Acara
-          </h2>
-          <div className="flex items-center justify-center space-x-4 mb-6">
-            <div className="w-12 h-px bg-linear-to-r from-transparent to-primary-dusty-pink" />
-            <FiHeart className="text-primary-dusty-pink text-sm" />
-            <div className="w-12 h-px bg-linear-to-r from-primary-dusty-pink to-transparent" />
-          </div>
-          <p className="text-lg text-gray-600">
-            Mohon kehadiran Bapak/Ibu/Saudara/i dalam acara kami
-          </p>
+      <div>
+        <p className="font-display text-5xl leading-none font-light lining-nums">{start}</p>
+        <p className="mt-2 text-[0.65rem] tracking-[0.3em] text-ink/50 uppercase">s.d. {end} WIB</p>
+      </div>
+
+      <div>
+        <h3 className="font-display text-3xl leading-tight sm:text-4xl">{event.name}</h3>
+        <p className="mt-3 text-ink/85">{event.venue}</p>
+        <p className="mt-1 text-sm leading-relaxed text-ink/60">{event.address}</p>
+
+        <div className="mt-7 flex flex-wrap gap-x-8 gap-y-4">
+          <a href={event.mapUrl} target="_blank" rel="noopener noreferrer" className="text-link">
+            Petunjuk Arah <ExternalLinkIcon />
+          </a>
+          <a
+            href={getGoogleCalendarUrl(event, wedding.date, CALENDAR_TITLE)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-link"
+          >
+            Simpan ke Kalender <ExternalLinkIcon />
+          </a>
+        </div>
+      </div>
+    </Reveal>
+  );
+}
+
+export function EventsSection() {
+  const { weekday, day, month, year } = getDateParts(wedding.date);
+  const { dressCode } = wedding;
+
+  return (
+    <section id={SECTION_ID.events} className="scroll-mt-16 bg-paper-deep px-4 py-20 sm:px-8 sm:py-28 lg:px-12">
+      <div className="mx-auto grid max-w-6xl gap-14 lg:grid-cols-12 lg:gap-16">
+        <div className="lg:col-span-5">
+          <SectionHeading
+            index="02"
+            eyebrow="Acara"
+            align="split"
+            title={
+              <>
+                Hari yang <em className="text-clay">dinanti</em>
+              </>
+            }
+          />
+
+          <Reveal delay={0.1} className="mt-10 flex items-end justify-center gap-5 lg:mt-14 lg:justify-start">
+            <span className="font-display text-[7.5rem] leading-[0.75] font-light lining-nums sm:text-[9rem] lg:text-[11rem]">
+              {day}
+            </span>
+            <span className="pb-1 text-left">
+              <span className="eyebrow block text-moss">{weekday}</span>
+              <span className="mt-2 block font-display text-2xl leading-none sm:text-3xl">
+                {month} {year}
+              </span>
+            </span>
+          </Reveal>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 mb-10">
-          {events.map((event, index) => (
-            <div 
-              key={event.name}
-              className="bg-white rounded-2xl shadow-lg p-8 card-hover animate-fade-up"
-              style={{ animationDelay: `${index * 0.2}s` }}
-            >
-              <div className="text-center mb-8">
-                <h3 className="text-2xl font-serif text-gray-800 mb-2">{event.name}</h3>
-                <div className="w-16 h-1 bg-accent-gold mx-auto" />
-              </div>
-              
-              <div className="space-y-6">
-                <div className="flex items-center space-x-4">
-                  <div className="bg-primary-cream p-3 rounded-full">
-                    <FiCalendar className="text-accent-gold text-xl" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Tanggal</p>
-                    <p className="text-gray-800 font-medium">{event.date}</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center space-x-4">
-                  <div className="bg-primary-cream p-3 rounded-full">
-                    <FiClock className="text-accent-gold text-xl" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Waktu</p>
-                    <p className="text-gray-800 font-medium">{event.time}</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start space-x-4">
-                  <div className="bg-primary-cream p-3 rounded-full">
-                    <FiMapPin className="text-accent-gold text-xl" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Lokasi</p>
-                    <p className="text-gray-800 font-medium">{event.venue}</p>
-                    <p className="text-gray-600 text-sm mt-1">{event.address}</p>
-                  </div>
-                </div>
-              </div>
-              
-              <a
-                href={event.mapUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-secondary w-full mt-8 flex items-center justify-center space-x-2"
-              >
-                <FiMapPin />
-                <span>Lihat Lokasi</span>
-                <FiExternalLink />
-              </a>
+        <div className="lg:col-span-7">
+          <ol className="border-t border-ink/15">
+            {wedding.events.map((event, index) => (
+              <EventItem key={event.name} event={event} delay={index * 0.1} />
+            ))}
+          </ol>
+
+          <Reveal delay={0.2} className="mt-10 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="eyebrow text-moss">Dress Code</p>
+              <p className="mt-2 font-display text-2xl">{dressCode.label}</p>
             </div>
-          ))}
-        </div>
-        
-        <div className="max-w-3xl mx-auto p-6 bg-white/50 rounded-xl">
-          <p className="text-center text-gray-700">
-            *Dress code: Pastel Colors / Formal Attire
-          </p>
-          <p className="text-center text-gray-600 text-sm mt-2">
-            Kehadiran dan doa restu Bapak/Ibu/Saudara/i merupakan kebahagiaan bagi kami
-          </p>
+            <ul aria-label="Palet warna yang disarankan" className="flex gap-2.5">
+              {dressCode.palette.map((color) => (
+                <li
+                  key={color}
+                  title={color}
+                  className="h-9 w-9 rounded-full border border-ink/10"
+                  style={{ backgroundColor: color }}
+                />
+              ))}
+            </ul>
+          </Reveal>
         </div>
       </div>
     </section>
-  )
+  );
 }

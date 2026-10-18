@@ -1,190 +1,217 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useInView } from 'react-intersection-observer'
-import { FiHeart, FiUser, FiMail, FiMessageCircle, FiCheck } from 'react-icons/fi'
+import { useState, type ChangeEvent, type FormEvent } from "react";
+import { ArrowIcon } from "@/components/ui/icons";
+import { Reveal } from "@/components/ui/reveal";
+import { SectionHeading } from "@/components/ui/section-heading";
+import { SECTION_ID } from "@/config/navigation";
 
-export default function RSVP() {
-  const [ref, inView] = useInView({
-    triggerOnce: true,
-    threshold: 0.1,
-  })
+type Attendance = "hadir" | "tidak-hadir" | "belum-pasti";
 
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    attendance: '',
-    guests: '1',
-    message: ''
-  })
+interface RsvpFormData {
+  name: string;
+  email: string;
+  attendance: Attendance | "";
+  guests: number;
+  message: string;
+}
 
-  const [isSubmitted, setIsSubmitted] = useState(false)
+const ATTENDANCE_OPTIONS: { value: Attendance; label: string; thanks: string }[] = [
+  { value: "hadir", label: "Hadir", thanks: "Kami menantikan kehadiran Anda di hari bahagia kami." },
+  { value: "tidak-hadir", label: "Tidak Hadir", thanks: "Doa dan restu Anda tetap sangat berarti bagi kami." },
+  { value: "belum-pasti", label: "Belum Pasti", thanks: "Kabari kami kembali bila sudah pasti, ya." },
+];
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log('Form submitted:', formData)
-    setIsSubmitted(true)
-    setTimeout(() => setIsSubmitted(false), 3000)
-  }
+const MIN_GUESTS = 1;
+const MAX_GUESTS = 5;
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    })
-  }
+const FIELD_CLASS =
+  "mt-2 w-full border-0 border-b border-ink/25 bg-transparent px-0 py-3 text-base text-ink transition-colors placeholder:text-ink/35 focus:border-ink focus:outline-none";
+const STEPPER_CLASS =
+  "flex h-11 w-11 items-center justify-center border border-ink/25 text-lg transition-colors hover:border-ink disabled:opacity-30";
+
+interface RsvpSectionProps {
+  guest?: string;
+}
+
+export function RsvpSection({ guest }: RsvpSectionProps) {
+  const [form, setForm] = useState<RsvpFormData>({
+    name: guest ?? "",
+    email: "",
+    attendance: "",
+    guests: MIN_GUESTS,
+    message: "",
+  });
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setForm({ ...form, [event.target.name]: event.target.value });
+  };
+
+  const changeGuests = (delta: number) => {
+    const guests = Math.min(MAX_GUESTS, Math.max(MIN_GUESTS, form.guests + delta));
+    setForm({ ...form, guests });
+  };
+
+  const handleSubmit = (event: FormEvent) => {
+    event.preventDefault();
+    // TODO: kirim `form` ke backend (API route / Google Sheets) — saat ini data belum disimpan
+    setIsSubmitted(true);
+  };
+
+  const firstName = form.name.trim().split(" ")[0];
+  const thanks = ATTENDANCE_OPTIONS.find((option) => option.value === form.attendance)?.thanks;
 
   return (
-    <section 
-      id="rsvp"
-      ref={ref}
-      className={`section-container transition-all duration-700 ${
-        inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-      }`}
-    >
-      <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <FiHeart className="text-primary-dusty-pink text-4xl mx-auto mb-6 animate-pulse" />
-          <h2 className="text-4xl md:text-5xl font-serif text-gray-800 mb-4">
-            RSVP
-          </h2>
-          <div className="flex items-center justify-center space-x-4 mb-6">
-            <div className="w-12 h-px bg-linear-to-r from-transparent to-primary-dusty-pink" />
-            <FiHeart className="text-primary-dusty-pink text-sm" />
-            <div className="w-12 h-px bg-linear-to-r from-primary-dusty-pink to-transparent" />
-          </div>
-          <p className="text-lg text-gray-600">
-            Mohon konfirmasi kehadiran Anda
-          </p>
+    <section id={SECTION_ID.rsvp} className="scroll-mt-16 px-4 py-20 sm:px-8 sm:py-28 lg:px-12">
+      <div className="mx-auto grid max-w-6xl gap-14 lg:grid-cols-12 lg:gap-16">
+        <div className="lg:col-span-5">
+          <SectionHeading
+            index="06"
+            eyebrow="RSVP"
+            align="split"
+            title={
+              <>
+                Konfirmasi <em className="text-clay">kehadiran</em>
+              </>
+            }
+          />
+          <Reveal delay={0.1}>
+            <p className="mx-auto mt-6 max-w-sm text-center text-[0.95rem] leading-relaxed text-ink/65 lg:mx-0 lg:text-left">
+              Mohon kesediaan Bapak/Ibu/Saudara/i untuk mengonfirmasi kehadiran, agar kami dapat mempersiapkan segala
+              sesuatunya dengan baik.
+            </p>
+          </Reveal>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="bg-white/70 backdrop-blur-sm p-8 md:p-10 rounded-2xl shadow-xl border border-white/50">
-          {/* Name Input */}
-          <div className="mb-6">
-            <label htmlFor="name" className="flex items-center text-gray-700 font-medium mb-2">
-              <FiUser className="mr-2 text-primary-dusty-pink" />
-              Nama Lengkap <span className="text-red-500 ml-1">*</span>
-            </label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-primary-dusty-pink focus:ring-2 focus:ring-primary-dusty-pink/20 outline-none transition-all duration-300"
-              placeholder="Masukkan nama lengkap Anda"
-            />
-          </div>
-
-          {/* Email Input */}
-          <div className="mb-6">
-            <label htmlFor="email" className="flex items-center text-gray-700 font-medium mb-2">
-              <FiMail className="mr-2 text-primary-dusty-pink" />
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-primary-dusty-pink focus:ring-2 focus:ring-primary-dusty-pink/20 outline-none transition-all duration-300"
-              placeholder="nama@gmail.com"
-            />
-          </div>
-
-          {/* Attendance Select */}
-          <div className="mb-6">
-            <label htmlFor="attendance" className="flex items-center text-gray-700 font-medium mb-2">
-              <FiCheck className="mr-2 text-primary-dusty-pink" />
-              Konfirmasi Kehadiran <span className="text-red-500 ml-1">*</span>
-            </label>
-            <select
-              id="attendance"
-              name="attendance"
-              value={formData.attendance}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-primary-dusty-pink focus:ring-2 focus:ring-primary-dusty-pink/20 outline-none transition-all duration-300 bg-white"
-            >
-              <option value="">Pilih konfirmasi kehadiran</option>
-              <option value="hadir">Ya, saya akan hadir</option>
-              <option value="tidak-hadir">Maaf, saya tidak bisa hadir</option>
-              <option value="masih-ragu">Masih belum yakin</option>
-            </select>
-          </div>
-
-          {/* Number of Guests */}
-          {formData.attendance === 'hadir' && (
-            <div className="mb-6 animate-fade-up">
-              <label htmlFor="guests" className="flex items-center text-gray-700 font-medium mb-2">
-                <FiUser className="mr-2 text-primary-dusty-pink" />
-                Jumlah Tamu
-              </label>
-              <select
-                id="guests"
-                name="guests"
-                value={formData.guests}
-                onChange={handleChange}
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-primary-dusty-pink focus:ring-2 focus:ring-primary-dusty-pink/20 outline-none transition-all duration-300 bg-white"
-              >
-                <option value="1">1 Orang</option>
-                <option value="2">2 Orang</option>
-                <option value="3">3 Orang</option>
-                <option value="4">4 Orang</option>
-                <option value="5">5+ Orang</option>
-              </select>
+        <Reveal delay={0.15} className="lg:col-span-7">
+          {isSubmitted ? (
+            <div role="status" className="border border-ink/15 px-6 py-14 text-center sm:px-12">
+              <p className="eyebrow text-moss">Terkirim</p>
+              <p className="mt-4 font-display text-4xl font-light sm:text-5xl">
+                Terima kasih{firstName && `, ${firstName}`}.
+              </p>
+              <p className="mx-auto mt-4 max-w-sm text-ink/65">{thanks}</p>
+              <button type="button" onClick={() => setIsSubmitted(false)} className="text-link mt-8">
+                Ubah Jawaban
+              </button>
             </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-9">
+              <div className="grid gap-9 sm:grid-cols-2 sm:gap-8">
+                <div>
+                  <label htmlFor="name" className="eyebrow block text-ink/55">
+                    Nama Lengkap <span className="text-clay">*</span>
+                  </label>
+                  <input
+                    id="name"
+                    name="name"
+                    type="text"
+                    value={form.name}
+                    onChange={handleChange}
+                    required
+                    autoComplete="name"
+                    placeholder="Nama Anda"
+                    className={FIELD_CLASS}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="email" className="eyebrow block text-ink/55">
+                    Email <span className="tracking-normal text-ink/40 normal-case">(opsional)</span>
+                  </label>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    value={form.email}
+                    onChange={handleChange}
+                    autoComplete="email"
+                    placeholder="nama@email.com"
+                    className={FIELD_CLASS}
+                  />
+                </div>
+              </div>
+
+              <fieldset>
+                <legend className="eyebrow text-ink/55">
+                  Kehadiran <span className="text-clay">*</span>
+                </legend>
+                <div className="mt-3 grid grid-cols-3 divide-x divide-ink/20 border border-ink/20">
+                  {ATTENDANCE_OPTIONS.map((option) => (
+                    <label
+                      key={option.value}
+                      className="relative flex cursor-pointer items-center justify-center px-2 py-4 text-center text-[0.68rem] tracking-[0.18em] text-ink/70 uppercase transition-colors hover:bg-ink/5 has-checked:bg-ink has-checked:text-paper has-focus-visible:outline-2 has-focus-visible:-outline-offset-4 has-focus-visible:outline-clay sm:text-xs sm:tracking-[0.25em]"
+                    >
+                      <input
+                        type="radio"
+                        name="attendance"
+                        value={option.value}
+                        checked={form.attendance === option.value}
+                        onChange={handleChange}
+                        required
+                        className="sr-only"
+                      />
+                      {option.label}
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+
+              {form.attendance === "hadir" && (
+                <div className="animate-fade-up">
+                  <p id="guests-label" className="eyebrow text-ink/55">
+                    Jumlah Tamu
+                  </p>
+                  <div role="group" aria-labelledby="guests-label" className="mt-3 flex items-center gap-6">
+                    <button
+                      type="button"
+                      onClick={() => changeGuests(-1)}
+                      disabled={form.guests <= MIN_GUESTS}
+                      aria-label="Kurangi tamu"
+                      className={STEPPER_CLASS}
+                    >
+                      −
+                    </button>
+                    <output aria-live="polite" className="min-w-16 text-center font-display text-3xl lining-nums">
+                      {form.guests}
+                      <span className="ml-1.5 font-sans text-xs text-ink/50">orang</span>
+                    </output>
+                    <button
+                      type="button"
+                      onClick={() => changeGuests(1)}
+                      disabled={form.guests >= MAX_GUESTS}
+                      aria-label="Tambah tamu"
+                      className={STEPPER_CLASS}
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <div>
+                <label htmlFor="message" className="eyebrow block text-ink/55">
+                  Ucapan &amp; Doa
+                </label>
+                <textarea
+                  id="message"
+                  name="message"
+                  value={form.message}
+                  onChange={handleChange}
+                  rows={3}
+                  placeholder="Tulis ucapan dan doa untuk kami…"
+                  className={`${FIELD_CLASS} resize-none`}
+                />
+              </div>
+
+              <button type="submit" className="button-primary group w-full sm:w-auto">
+                Kirim Konfirmasi
+                <ArrowIcon className="h-3 w-7 transition-transform duration-300 group-hover:translate-x-1.5" />
+              </button>
+            </form>
           )}
-
-          {/* Message Textarea */}
-          <div className="mb-8">
-            <label htmlFor="message" className="flex items-center text-gray-700 font-medium mb-2">
-              <FiMessageCircle className="mr-2 text-primary-dusty-pink" />
-              Ucapan & Doa
-            </label>
-            <textarea
-              id="message"
-              name="message"
-              value={formData.message}
-              onChange={handleChange}
-              rows={4}
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-primary-dusty-pink focus:ring-2 focus:ring-primary-dusty-pink/20 outline-none transition-all duration-300 resize-none"
-              placeholder="Tulis ucapan dan doa untuk kami..."
-            />
-          </div>
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={isSubmitted}
-            className={`w-full py-4 rounded-lg font-medium text-white transition-all duration-300 ${
-              isSubmitted 
-                ? 'bg-green-500 hover:bg-green-600' 
-                : 'bg-linear-to-r from-primary-dusty-pink to-primary-sage-green hover:shadow-xl hover:scale-105'
-            }`}
-          >
-            {isSubmitted ? (
-              <span className="flex items-center justify-center">
-                <FiCheck className="mr-2" />
-                Terima Kasih!
-              </span>
-            ) : (
-              'Kirim Konfirmasi'
-            )}
-          </button>
-        </form>
-
-        {/* Thank You Note */}
-        <div className="mt-10 text-center">
-          <p className="text-gray-600 italic">
-            Terima kasih atas konfirmasi kehadiran Anda. Kehadiran dan doa restu Anda sangat berarti bagi kami.
-          </p>
-        </div>
+        </Reveal>
       </div>
     </section>
-  )
+  );
 }

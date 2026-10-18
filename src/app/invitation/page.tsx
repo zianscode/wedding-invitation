@@ -1,32 +1,32 @@
-'use client'
+import { ScrollToTopButton } from "@/components/layout/scroll-to-top-button";
+import { SiteHeader } from "@/components/layout/site-header";
+import { ClosingSection } from "@/components/sections/closing-section";
+import { CountdownSection } from "@/components/sections/countdown-section";
+import { CoupleSection } from "@/components/sections/couple-section";
+import { EventsSection } from "@/components/sections/events-section";
+import { GallerySection } from "@/components/sections/gallery-section";
+import { LoveStorySection } from "@/components/sections/love-story-section";
+import { OpeningSection } from "@/components/sections/opening-section";
+import { RsvpSection } from "@/components/sections/rsvp-section";
+import { getGuestName, type GuestSearchParams } from "@/lib/guest";
 
-import Opening from '../components/Opening'
-import Profile from '../components/Profile'
-import EventDetails from '../components/EventDetails'
-import Countdown from '../components/Countdown'
-import Gallery from '../components/Gallery'
-import LoveStory from '../components/LoveStory'
-import Closing from '../components/Closing'
-import ScrollIndicator from '../components/ScrollIndicator'
-import RSVP from '../components/RSVP'
-import Header from '../components/Header'
-import { weddingData } from '../utils/constants'
+export default async function InvitationPage({ searchParams }: { searchParams: GuestSearchParams }) {
+  const guest = getGuestName((await searchParams).to);
 
-export default function InvitationPage() {
   return (
-    <div className="relative">
-      <ScrollIndicator />
-      <Header /> 
-      <div className="space-y-16 md:space-y-24 mt-8 md:mt-12">
-        <Opening />
-        <Profile couple={weddingData.couple} />
-        <EventDetails events={weddingData.events} />
-        <Countdown weddingDate={weddingData.weddingDate} />
-        <Gallery photos={weddingData.galleryPhotos} />
-        <LoveStory story={weddingData.loveStory} />
-        <RSVP />
-        <Closing />
-      </div>      
-    </div>
-  )
+    // Padding bawah di mobile untuk navigasi bawah (setinggi 3.5rem + gesture bar)
+    <main className="paper-grain bg-paper pb-[calc(3.5rem+env(safe-area-inset-bottom))] text-ink md:pb-0">
+      <SiteHeader />
+      <ScrollToTopButton />
+
+      <OpeningSection guest={guest} />
+      <CoupleSection />
+      <EventsSection />
+      <CountdownSection />
+      <GallerySection />
+      <LoveStorySection />
+      <RsvpSection guest={guest} />
+      <ClosingSection />
+    </main>
+  );
 }

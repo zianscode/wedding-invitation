@@ -1,247 +1,137 @@
 @import "tailwindcss";
 
-@theme {
-  --color-primary-cream: #F9F6F0;
-  --color-primary-ivory: #FFFFF0;
-  --color-primary-beige: #F5F5DC;
-  --color-primary-dusty-pink: #DCAE96;
-  --color-primary-sage-green: #C9D4BA;
-  --color-accent-gold: #D4AF37;
-  --color-accent-brown: #8B7355;
-  
-  --font-handwriting: 'Dancing Script', cursive;
-  --font-serif: 'Playfair Display', serif;
-  --font-sans: 'Inter', sans-serif;
-  
-  --animate-fade-in: fadeIn 1s ease-in-out;
-  --animate-fade-up: fadeUp 0.8s ease-out;
-  --animate-float: float 3s ease-in-out infinite;
-  --animate-bounce: bounce 1s infinite;
-  --animate-ping: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
-  
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+/* ---------- Design tokens ---------- */
+
+@theme inline {
+  --color-paper: #f3eee4;
+  --color-paper-deep: #eae3d5;
+  --color-ink: #24261f;
+  --color-moss: #4b5a41;
+  --color-clay: #a86a4e;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-cormorant), "Cormorant Garamond", serif;
+
+  --animate-fade-in: fade-in 0.8s ease-out;
+  --animate-fade-up: fade-up 0.6s ease-out;
+}
+
+/* ---------- Base ---------- */
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scrollbar-width: none;
   }
-  
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+
+  html::-webkit-scrollbar {
+    display: none;
   }
-  
-  @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
   }
-  
-  @keyframes fadeDown {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  
-  @keyframes scaleX {
-    from { transform: scaleX(0); }
-    to { transform: scaleX(1); }
-  }
-  
-  @keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-  }
-  
-  @keyframes ping {
-    75%, 100% { transform: scale(2); opacity: 0; }
+
+  ::selection {
+    background-color: color-mix(in srgb, var(--color-clay) 25%, transparent);
   }
 }
 
-/* Custom Styles */
-html {
-  scroll-behavior: smooth;
+/* ---------- Utilities ---------- */
+
+/** Label kecil berhuruf kapital dengan spasi lebar */
+@utility eyebrow {
+  font-size: 0.65rem;
+  line-height: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.35em;
 }
 
-body {
-  background: var(--color-primary-cream);
-  color: #374151;
-  font-family: var(--font-sans);
+/** Tautan teks bergaris bawah */
+@utility text-link {
+  @apply inline-flex items-center gap-2 border-b border-ink/30 pb-1 text-[0.68rem] tracking-[0.3em] text-ink uppercase transition-colors hover:border-clay hover:text-clay;
 }
 
-::selection {
-  background-color: color-mix(in srgb, var(--color-primary-dusty-pink) 30%, transparent);
-  color: #1f2937;
+/** Tombol utama berwarna gelap */
+@utility button-primary {
+  @apply inline-flex shrink-0 items-center justify-center gap-4 bg-ink px-7 py-4 text-[0.72rem] tracking-[0.3em] whitespace-nowrap text-paper uppercase transition-colors duration-300 hover:bg-moss focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-clay;
 }
 
-::-webkit-scrollbar {
-  display: none;
-}
-
-html {
-  scrollbar-width: none;
-}
-
-body {
-  -ms-overflow-style: none;
-}
-
-.section-container {
-  max-width: 72rem;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  padding-top: 4rem;
-  padding-bottom: 4rem;
-}
-
-@media (min-width: 640px) {
-  .section-container {
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .section-container {
-    padding-left: 2rem;
-    padding-right: 2rem;
-  }
-}
-
-.section-title {
-  font-size: 2.25rem;
-  font-family: var(--font-serif);
-  text-align: center;
-  margin-bottom: 3rem;
-  color: #1f2937;
+/** Tekstur kertas halus di belakang konten */
+@utility paper-grain {
   position: relative;
-}
+  isolation: isolate;
 
-@media (min-width: 768px) {
-  .section-title {
-    font-size: 2.5rem;
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.35;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.35 0 0 0 0 0.3 0 0 0 0 0.25 0 0 0 0.18 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 }
 
-.section-title::after {
-  content: '';
-  position: absolute;
-  bottom: -0.75rem;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 6rem;
-  height: 1px;
-  background: linear-gradient(to right, transparent, var(--color-accent-gold), transparent);
+/* ---------- Animations ---------- */
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-.floral-divider {
-  text-align: center;
-  color: var(--color-accent-brown);
-  font-size: 1.5rem;
-  margin-top: 2rem;
-  margin-bottom: 2rem;
-  opacity: 0.6;
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
 }
 
-.btn-primary {
-  background-color: var(--color-primary-dusty-pink);
-  color: white;
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
-  padding-top: 0.75rem;
-  padding-bottom: 0.75rem;
-  border-radius: 9999px;
-  font-weight: 500;
-  transition: all 0.3s ease;
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
 }
 
-.btn-primary:hover {
-  background-color: var(--color-primary-sage-green);
-  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-  transform: translateY(-4px);
+@keyframes arch-reveal {
+  from { clip-path: inset(100% 0 0 0); }
+  to { clip-path: inset(0 0 0 0); }
 }
 
-.btn-secondary {
-  border: 1px solid var(--color-accent-gold);
-  color: var(--color-accent-gold);
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
-  padding-top: 0.75rem;
-  padding-bottom: 0.75rem;
-  border-radius: 9999px;
-  font-weight: 500;
-  transition: all 0.3s ease;
+@keyframes settle {
+  from { transform: scale(1.12); }
+  to { transform: scale(1); }
 }
 
-.btn-secondary:hover {
-  background-color: color-mix(in srgb, var(--color-accent-gold) 10%, transparent);
-  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+@keyframes equalizer {
+  0%, 100% { height: 25%; }
+  50% { height: 100%; }
 }
 
-.card-hover {
-  transition: all 0.3s ease;
+/* Animasi masuk halaman sampul; jeda diatur lewat variabel --d */
+.reveal {
+  animation: rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: var(--d, 0s);
 }
 
-.card-hover:hover {
-  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
-  transform: translateY(-4px);
+.arch-reveal {
+  animation: arch-reveal 1.4s cubic-bezier(0.65, 0, 0.35, 1) both;
 }
 
-.animate-fade-down {
-  animation: fadeDown 1s ease-out;
+.arch-settle {
+  animation: settle 2.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
-.animate-scale-x {
-  animation: scaleX 0.8s ease-out 0.5s;
+/* Batang equalizer tombol musik */
+.eq-bar {
+  height: 60%;
+  animation: equalizer 0.9s ease-in-out infinite;
 }
 
-/* Flower particle animations */
-@keyframes floatDown {
-  0% {
-    transform: translateY(0) rotate(0deg) scale(1);
-    opacity: 0;
-  }
-  10% {
-    opacity: 0.4;
-  }
-  90% {
-    opacity: 0.3;
-  }
-  100% {
-    transform: translateY(100vh) rotate(360deg) scale(0);
-    opacity: 0;
-  }
-}
-
-@keyframes floatDownSmooth {
-  0% {
-    transform: translateY(-50px) translateX(0) rotate(0deg);
-    opacity: 0;
-  }
-  10% {
-    opacity: 0.5;
-  }
-  90% {
-    opacity: 0.3;
-  }
-  100% {
-    transform: translateY(110vh) translateX(20px) rotate(180deg);
-    opacity: 0;
-  }
-}
-
-@keyframes gentleFall {
-  0% {
-    transform: translateY(-50px) translateX(0) rotate(0deg) scale(0.9);
-    opacity: 0;
-  }
-  15% {
-    opacity: 0.6;
-    transform: scale(1);
-  }
-  85% {
-    opacity: 0.2;
-  }
-  100% {
-    transform: translateY(100vh) translateX(-15px) rotate(-120deg) scale(0.8);
-    opacity: 0;
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .arch-reveal,
+  .arch-settle,
+  .eq-bar {
+    animation: none;
   }
 }

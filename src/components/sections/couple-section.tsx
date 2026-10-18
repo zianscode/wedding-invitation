@@ -1,133 +1,71 @@
-"use client";
-
-import { useInView } from "react-intersection-observer";
-import { Couple } from "@/types";
-import { FiHeart } from "react-icons/fi";
 import Image from "next/image";
+import { ArchFrame } from "@/components/ui/arch-frame";
+import { Reveal } from "@/components/ui/reveal";
+import { SectionHeading } from "@/components/ui/section-heading";
+import { SECTION_ID } from "@/config/navigation";
+import { wedding } from "@/data/wedding";
+import type { Person } from "@/types/wedding";
 
-interface ProfileProps {
-  couple: Couple;
+interface PersonProfileProps {
+  person: Person;
+  role: string;
+  parentLabel: string;
+  delay?: number;
+  className?: string;
 }
 
-export default function Profile({ couple }: ProfileProps) {
-  const [ref, inView] = useInView({
-    triggerOnce: true,
-    threshold: 0.1,
-  });
+function PersonProfile({ person, role, parentLabel, delay = 0, className = "" }: PersonProfileProps) {
+  return (
+    <Reveal delay={delay} className={`flex flex-col items-center text-center ${className}`}>
+      <ArchFrame className="aspect-3/4 w-[min(68vw,16rem)] lg:w-72">
+        <Image
+          src={person.photo}
+          alt={`Foto ${person.fullName}`}
+          fill
+          sizes="(min-width: 1024px) 288px, 68vw"
+          className="object-cover"
+        />
+      </ArchFrame>
+
+      <p className="eyebrow mt-9 text-moss">{role}</p>
+      <h3 className="mt-3 font-display text-[2.5rem] leading-none font-light sm:text-5xl">{person.fullName}</h3>
+      <p className="mt-5 text-sm leading-relaxed text-ink/60">
+        {parentLabel}
+        <br />
+        <span className="text-ink/85">{person.father}</span>
+        <span className="mx-1.5 font-display text-clay italic">&amp;</span>
+        <span className="text-ink/85">{person.mother}</span>
+      </p>
+    </Reveal>
+  );
+}
+
+export function CoupleSection() {
+  const { groom, bride } = wedding.couple;
 
   return (
-    <section
-      id="profile"
-      ref={ref}
-      className={`section-container transition-all duration-700 ${
-        inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-      }`}
-    >
-      <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-12">
-          <FiHeart className="text-primary-dusty-pink text-4xl mx-auto mb-6 animate-pulse" />
-          <h2 className="text-4xl md:text-5xl font-serif text-gray-800 mb-4">
-            Mempelai
-          </h2>
-          <div className="flex items-center justify-center space-x-4 mb-6">
-            <div className="w-12 h-px bg-linear-to-r from-transparent to-primary-dusty-pink" />
-            <FiHeart className="text-primary-dusty-pink text-sm" />
-            <div className="w-12 h-px bg-linear-to-r from-primary-dusty-pink to-transparent" />
-          </div>
-          <p className="text-lg text-gray-600">
-            Mempelai yang berbahagia
-          </p>
-        </div>
+    <section id={SECTION_ID.couple} className="scroll-mt-16 px-4 py-20 sm:px-8 sm:py-28 lg:px-12">
+      <SectionHeading
+        index="01"
+        eyebrow="Mempelai"
+        title={
+          <>
+            Dua hati, <em className="text-clay">satu janji</em>
+          </>
+        }
+      />
 
-        <div className="flex flex-col md:flex-row items-center justify-center gap-12 md:gap-24 mb-16">
-          <div
-            className="text-center animate-fade-up"
-            style={{ animationDelay: "0.2s" }}
-          >
-            <div className="relative mb-6">
-              <div className="w-64 h-64 md:w-72 md:h-72 rounded-full overflow-hidden border-4 border-white shadow-xl mx-auto bg-linear-to-br from-primary-cream to-primary-beige">
-                <div className="relative w-full h-full">
-                  <Image
-                    src={couple.groom.photo}
-                    alt={`Foto ${couple.groom.name}`}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 256px, 288px"
-                    priority
-                  />
-                </div>
-              </div>
-              <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 bg-accent-gold text-white px-6 py-1 rounded-full text-sm font-medium">
-                Mempelai Pria
-              </div>
-            </div>
-            <h3 className="text-2xl font-serif text-gray-800 mb-2">
-              {couple.groom.name}
-            </h3>
-            <p className="text-lg text-gray-700 mb-4">{couple.groom.fullName}</p>
-            <div className="text-gray-600">
-              <p>Putra dari:</p>
-              <p className="font-medium">{couple.groom.father}</p>
-              <p className="font-medium">&</p>
-              <p className="font-medium">{couple.groom.mother}</p>
-            </div>
-          </div>
+      <div className="mx-auto mt-16 grid max-w-5xl items-start gap-6 sm:mt-20 md:grid-cols-[1fr_auto_1fr] md:gap-4 lg:gap-10">
+        <PersonProfile person={groom} role="Mempelai Pria" parentLabel="Putra dari" />
 
-          <div className="hidden md:flex flex-col items-center animate-float">
-            <div className="text-5xl font-handwriting text-primary-dusty-pink">
-              &
-            </div>
-            <div className="h-48 w-px bg-linear-to-b from-transparent via-accent-gold to-transparent my-8" />
-          </div>
+        <Reveal
+          delay={0.15}
+          className="self-center justify-self-center py-4 font-display text-7xl font-light text-clay italic md:py-0 md:text-8xl lg:text-9xl"
+        >
+          <span aria-hidden>&amp;</span>
+        </Reveal>
 
-          <div className="md:hidden my-8">
-            <div className="text-4xl font-handwriting text-primary-dusty-pink">
-              &
-            </div>
-          </div>
-
-          <div
-            className="text-center animate-fade-up"
-            style={{ animationDelay: "0.4s" }}
-          >
-            <div className="relative mb-6">
-              <div className="w-64 h-64 md:w-72 md:h-72 rounded-full overflow-hidden border-4 border-white shadow-xl mx-auto bg-linear-to-br from-primary-cream to-primary-dusty-pink/20">
-                <div className="relative w-full h-full">
-                  <Image
-                    src={couple.bride.photo}
-                    alt={`Foto ${couple.bride.name}`}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 256px, 288px"
-                    priority
-                  />
-                </div>
-              </div>
-              <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 bg-primary-dusty-pink text-white px-6 py-1 rounded-full text-sm font-medium">
-                Mempelai Wanita
-              </div>
-            </div>
-            <h3 className="text-2xl font-serif text-gray-800 mb-2">
-              {couple.bride.name}
-            </h3>
-            <p className="text-lg text-gray-700 mb-4">{couple.bride.fullName}</p>
-            <div className="text-gray-600">
-              <p>Putri dari:</p>
-              <p className="font-medium">{couple.bride.father}</p>
-              <p className="font-medium">&</p>
-              <p className="font-medium">{couple.bride.mother}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="max-w-2xl mx-auto text-center p-6 bg-white/50 rounded-xl">
-          <p className="text-gray-700">
-            &quot;Kasih itu sabar; kasih itu murah hati; ia tidak cemburu. Ia
-            tidak memegahkan diri dan tidak sombong. Ia tidak melakukan yang tidak
-            sopan dan tidak mencari keuntungan diri sendiri.&quot;
-          </p>
-          <p className="text-gray-600 mt-2">(1 Korintus 13:4-5)</p>
-        </div>
+        <PersonProfile person={bride} role="Mempelai Wanita" parentLabel="Putri dari" delay={0.2} className="md:mt-28" />
       </div>
     </section>
   );

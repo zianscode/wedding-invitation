@@ -1,58 +1,44 @@
-'use client'
+import { Reveal } from "@/components/ui/reveal";
+import { SECTION_ID } from "@/config/navigation";
+import { wedding } from "@/data/wedding";
+import { formatLongDate } from "@/lib/date";
 
-import { useInView } from 'react-intersection-observer'
-import { weddingData } from '@/app/utils/constants'
-import { FiHeart} from 'react-icons/fi'
+interface OpeningSectionProps {
+  guest?: string;
+}
 
-export default function Opening() {
-  const [ref, inView] = useInView({
-    triggerOnce: true,
-    threshold: 0.1,
-  })
-  
-  const quote = weddingData.quotes[0]
+export function OpeningSection({ guest }: OpeningSectionProps) {
+  const verse = wedding.verses.opening;
 
   return (
-    <section 
-      ref={ref}
-      className={`section-container transition-all duration-700 ${
-        inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-      }`}
+    // Satu layar penuh: tinggi layar dikurangi navigasi bawah (mobile), isi di tengah
+    <section
+      id={SECTION_ID.opening}
+      className="flex min-h-[calc(100svh-3.5rem-env(safe-area-inset-bottom))] flex-col justify-center px-4 pt-20 pb-12 sm:px-8 sm:pt-24 sm:pb-16 md:min-h-svh"
     >
+      <div className="mx-auto flex max-w-4xl flex-col items-center text-center">
+        <Reveal>
+          <p className="eyebrow text-ink/50 sm:text-xs">Kepada Yth.</p>
+          <p className="mt-2 font-display text-2xl wrap-break-word sm:text-3xl">{guest || "Bapak/Ibu/Saudara/i"}</p>
+        </Reveal>
 
-      <div className="max-w-3xl mx-auto text-center">
-        <div className="floral-divider">
-          <FiHeart className="inline mx-2" />
-          <FiHeart className="inline mx-2" />
-          <FiHeart className="inline mx-2" />
-        </div>
-        
-        <h2 className="text-2xl md:text-3xl font-serif text-gray-800 mb-8">
-          Dengan penuh rasa syukur dan sukacita di dalam Tuhan, kami mengundang Bapak/Ibu/Saudara/i
-        </h2>
-        
-        <div className="my-12">
-          <p className="text-lg md:text-xl text-gray-600 leading-relaxed mb-8">
-            untuk menghadiri acara pemberkatan pernikahan putra-putri kami yang akan dilaksanakan pada:
-          </p>
-          
-          <div className="bg-white/50 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-white/20">
-            <p className="text-xl font-serif text-gray-800 mb-6">
-              {weddingData.couple.groom.name} & {weddingData.couple.bride.name}
-            </p>
-            <p className="text-3xl md:text-4xl font-handwriting text-primary-dusty-pink mb-4">
-              14 Desember 2026
-            </p>
-          </div>
-        </div>
+        <Reveal delay={0.1} className="my-7 h-8 w-px bg-ink/25 sm:my-9 sm:h-10" />
 
-        <div className="mt-12 p-6 bg-primary-sage-green/10 rounded-xl animate-fade-up">
-          <FiHeart className="text-primary-dusty-pink text-xl mx-auto mb-4" />
-          <p className="text-gray-700 italic font-serif">
-            &quot;{quote}&quot;
+        <Reveal delay={0.15} as="figure">
+          <blockquote className="font-display text-[1.9rem] leading-[1.15] font-light text-balance italic sm:text-[2.6rem] lg:text-[3.25rem] 2xl:text-[3.9rem]">
+            &ldquo;{verse.text}&rdquo;
+          </blockquote>
+          <figcaption className="eyebrow mt-6 text-clay sm:text-xs">{verse.source}</figcaption>
+        </Reveal>
+
+        <Reveal delay={0.25}>
+          <p className="mt-8 max-w-xl text-[0.95rem] leading-relaxed text-pretty text-ink/70 sm:mt-10 sm:text-base">
+            Dengan penuh rasa syukur dan sukacita di dalam Tuhan, kami mengundang Bapak/Ibu/Saudara/i untuk hadir
+            dalam pemberkatan dan resepsi pernikahan kami pada{" "}
+            <span className="text-ink">{formatLongDate(wedding.date)}</span>.
           </p>
-        </div>
+        </Reveal>
       </div>
     </section>
-  )
+  );
 }
