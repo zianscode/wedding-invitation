@@ -6,8 +6,8 @@ Undangan pernikahan digital Next.js 16 (App Router), React 19, TypeScript, Tailw
 
 ```bash
 npm install
-npm run dev     # http://localhost:3000
-npm run build   # build produksi
+npm run dev    
+npm run build   
 npm run lint
 ```
 
@@ -32,24 +32,24 @@ kalender dihitung otomatis.
 
 ```
 src/
-├── app/                  # Routing saja (layout, page, globals.css)
+├── app/                  
 ├── components/
-│   ├── layout/           # Header, navigasi mobile, tombol musik, tombol ke atas
-│   ├── sections/         # Satu file per section halaman undangan
-│   └── ui/               # Komponen kecil yang dipakai ulang
-├── config/navigation.ts  # Id section & menu navigasi
-├── data/wedding.ts       # Konten undangan
-├── hooks/                # Custom hooks (use-*)
-├── lib/                  # Fungsi murni: tanggal, kalender, nama tamu
-├── providers/            # React context (musik latar)
-└── types/wedding.ts      # Tipe data konten
+│   ├── layout/           
+│   ├── sections/        
+│   └── ui/               
+├── config/navigation.ts  
+├── data/wedding.ts       
+├── hooks/                
+├── lib/                 
+├── providers/            
+└── types/wedding.ts      
 
 public/
 ├── audio/background-music.mp3
 └── images/
-    ├── cover.png         # Foto halaman sampul
-    ├── couple/           # groom.png, bride.png
-    └── gallery/          # Foto galeri
+    ├── cover.png         
+    ├── couple/           
+    └── gallery/          
 ```
 
 ## Konvensi
